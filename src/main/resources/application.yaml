@@ -1,0 +1,11 @@
+spring.profiles.active: local
+
+spring:
+  application:
+    name: project-manager
+
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+
