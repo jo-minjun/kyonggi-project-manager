@@ -52,6 +52,10 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
 
+      .my-tasks .dropdown-menu.show {
+        width: 300px;
+      }
+
       .dropdown-item {
         font-size: 0.9rem;
         color: #000;
@@ -98,6 +102,11 @@
         color: #FFD700;
       }
 
+      .create-project:hover {
+        cursor: pointer;
+        background-color: rgba(244, 245, 247);
+      }
+
       .profile-pic {
         width: 40px;
         height: 40px;
@@ -113,6 +122,8 @@
     </style>
 </head>
 <body>
+
+<jsp:include page="project-create.jsp"/>
 
 <!-- Header -->
 <header class="header">
@@ -131,16 +142,27 @@
             <a href="#board" class="nav-link">Board</a>
             <a href="#reports" class="nav-link">Reports</a>
 
+            <div class="dropdown my-tasks">
+                <a href="#" class="nav-link dropdown-toggle" id="tasksDropdown"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    내 작업
+                </a>
+                <ul class="dropdown-menu" id="tasksMenu" aria-labelledby="tasksDropdown">
+                </ul>
+            </div>
+
             <!-- Projects Dropdown -->
             <div class="dropdown">
                 <a href="#" class="nav-link dropdown-toggle" id="projectsDropdown"
                    data-bs-toggle="dropdown" aria-expanded="false">
-                    Projects
+                    프로젝트
                 </a>
                 <ul class="dropdown-menu" id="projectsMenu" aria-labelledby="projectsDropdown">
                     <!-- 고정된 "프로젝트 만들기" 항목 -->
-                    <li><a class="dropdown-item text-primary" href="/projects/create">프로젝트 만들기</a></li>
-                    <li><hr class="dropdown-divider"></li>
+                    <li class="create-project text-primary" style="padding-left: 16px">프로젝트 만들기</li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -183,6 +205,67 @@
 <!-- JavaScript -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+
+    const tasksMenu = document.getElementById('tasksMenu');
+
+    // 내 작업 메뉴 AJAX 요청
+    fetch('/api/me/tasks')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch tasks');
+      }
+      return response.json();
+    })
+    .then(data => {
+      tasksMenu.innerHTML = ''; // 기존 로딩 메시지 제거
+
+      if (data.length === 0) {
+        tasksMenu.innerHTML = '<li class="error-item">할당된 작업이 없습니다.</li>';
+        return;
+      }
+
+      data.forEach(task => {
+        const taskItem = document.createElement('li');
+        taskItem.innerHTML =
+            '<a href="/projects/' + task.projectId + '/tasks/' + task.id + '" class="dropdown-item" ' +
+            'style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">' +
+            '<div class="task-first-section" style="display: flex; align-items: center;">' +
+            '<div class="border-right" style="margin-right: 10px; padding-right: 10px; border-right: 1px solid #ccc;">' +
+            '<h5 style="margin: 0; font-size: 1rem; font-weight: bold; color: #172B4D;">' +
+            task.projectName +
+            '</h5>' +
+            '</div>' +
+            '<div>' +
+            '<div class="task-title" style="font-size: 0.9rem; font-weight: bold; color: #172B4D;">' +
+            task.title +
+            '</div>' +
+            '<span class="task-status" style="' +
+            'text-transform: uppercase; ' +
+            'font-size: 0.85rem; ' +
+            'font-weight: bold; ' +
+            'padding: 2px 8px; ' +
+            'border-radius: 4px; ' +
+            'background-color: ' + getStatusColor(task.status) + ';' +
+            'color: ' + getStatusTextColor(task.status) + ';">' +
+            getStatusText(task.status) +
+            '</span>' +
+            '</div>' +
+            '</div>' +
+            '</a>';
+        tasksMenu.appendChild(taskItem);
+      });
+    })
+    .catch(error => {
+      console.error('Error fetching tasks:', error);
+      tasksMenu.innerHTML = '<li><a class="dropdown-item text-danger">로그인을 해주세요.</a></li>';
+    });
+
+    const createProject = document.querySelector('.create-project');
+    createProject.addEventListener('click', () => {
+      const createProjectModal = new bootstrap.Modal(document.getElementById('createProjectModal'));
+      createProjectModal.show();
+    });
+
     // AJAX 요청
     fetch('/api/projects')
     .then(response => {
@@ -201,7 +284,8 @@
       // 동적으로 프로젝트 목록 추가
       data.forEach(project => {
         const menuItem = document.createElement('li');
-        menuItem.innerHTML = '<a class="dropdown-item" href="/projects/' + project.id + '">' + project.name + '</a>';
+        menuItem.innerHTML = '<a class="dropdown-item" href="/projects/' + project.id + '">'
+            + project.name + '</a>';
         projectsMenu.appendChild(menuItem);
       });
     })
@@ -211,6 +295,46 @@
       projectsMenu.innerHTML = '<li><a class="dropdown-item text-danger">로그인을 해주세요.</a></li>';
     });
   });
+
+  // 상태별 색상 및 텍스트 설정 함수
+  function getStatusColor(status) {
+    switch (status) {
+      case 'TODO':
+        return '#FFCC00'; // Yellow
+      case 'IN_PROGRESS':
+        return '#0052CC'; // Blue
+      case 'DONE':
+        return '#36B37E'; // Green
+      default:
+        return '#cccccc'; // Default gray
+    }
+  }
+
+  function getStatusTextColor(status) {
+    switch (status) {
+      case 'TODO':
+        return '#000';
+      case 'IN_PROGRESS':
+        return '#fff';
+      case 'DONE':
+        return '#fff';
+      default:
+        return '#000';
+    }
+  }
+
+  function getStatusText(status) {
+    switch (status) {
+      case 'TODO':
+        return 'TODO';
+      case 'IN_PROGRESS':
+        return 'IN PROGRESS';
+      case 'DONE':
+        return 'DONE';
+      default:
+        return 'UNKNOWN';
+    }
+  }
 </script>
 
 

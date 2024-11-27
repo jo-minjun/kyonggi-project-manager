@@ -14,6 +14,13 @@
         height: 90%;
       }
 
+      .project-info {
+        font-size: 0.9rem;
+        font-weight: bold;
+        color: #5E6C84;
+        margin-bottom: 10px;
+      }
+
       .modal-content {
         height: 100%;
         border-radius: 8px;
@@ -182,12 +189,15 @@
             <div class="modal-body">
                 <!-- 왼쪽: Body -->
                 <div class="modal-left">
-                    <h6>Body</h6>
+                    <h6>설명</h6>
                     <p id="modalTaskBody">Task body content here</p>
                 </div>
 
                 <!-- 오른쪽: 추가 정보 -->
                 <div class="modal-right">
+                    <div class="project-info">
+                    </div>
+
                     <div class="additionalInfo">
                         <div class="label additionalInfoKey">라벨:</div>
                         <div class="label-value" id="modalTaskLabel"></div>

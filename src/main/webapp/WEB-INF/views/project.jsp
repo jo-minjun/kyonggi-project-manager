@@ -197,43 +197,7 @@
 <!-- JavaScript -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const taskCards = document.querySelectorAll('.kanban-item');
-
-    taskCards.forEach(task => {
-      task.addEventListener('click', () => {
-        const taskId = task.getAttribute('data-id');
-
-        // 서버로 AJAX 요청
-        fetch('/getTaskDetails?taskId=' + taskId)
-        .then(response => response.json())
-        .then(data => {
-          // 서버에서 받은 데이터로 모달 업데이트
-          document.getElementById('modalTaskTitle').textContent = data.title || 'No Title';
-          document.getElementById('modalTaskBody').textContent = data.body || 'No Body';
-          document.getElementById('modalTaskLabel').textContent = data.label || 'No Label';
-          document.getElementById('modalTaskPriority').textContent = data.priority || 'Unknown';
-          document.getElementById('modalTaskCreatedByProfile').textContent = data.createdByProfile
-              || 'Unknown';
-          document.getElementById('modalTaskCreatedBy').textContent = data.createdBy || 'Unknown';
-          document.getElementById(
-              'modalTaskPersonInChargeProfile').textContent = data.personInChargeProfile
-              || 'Unknown';
-          document.getElementById('modalTaskPersonInCharge').textContent = data.personInCharge
-              || 'Unknown';
-          document.getElementById('modalTaskStatus').textContent = data.status || 'Unknown';
-          document.getElementById('modalTaskDueDate').textContent = data.dueDate || 'Unknown';
-          document.getElementById('modalTaskCreatedAt').textContent = data.createdDate || 'Unknown';
-
-          // 모달 표시
-          const taskDetailModal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
-          taskDetailModal.show();
-        })
-        .catch(error => {
-          console.error('Error fetching task details:', error);
-          alert('Failed to load task details. Please try again.');
-        });
-      });
-    });
+    registerClick();
   });
 
   let draggedItem = null;
@@ -294,24 +258,75 @@
     .catch(error => console.error('Error:', error));
   }
 
+  function registerClick() {
+    const taskCards = document.querySelectorAll('.kanban-item');
+
+    taskCards.forEach(task => {
+      task.addEventListener('click', () => {
+        const taskId = task.getAttribute('data-id');
+
+        // 서버로 AJAX 요청
+        fetch('/getTaskDetails?taskId=' + taskId)
+        .then(response => response.json())
+        .then(data => {
+          // 서버에서 받은 데이터로 모달 업데이트
+          document.getElementById('modalTaskTitle').textContent = data.title || 'No Title';
+          document.getElementById('modalTaskBody').textContent = data.body || 'No Body';
+          document.getElementById('modalTaskLabel').textContent = data.label || 'No Label';
+          document.getElementById('modalTaskPriority').textContent = data.priority || 'Unknown';
+          document.getElementById('modalTaskCreatedByProfile').textContent = data.createdByProfile
+              || 'Unknown';
+          document.getElementById('modalTaskCreatedBy').textContent = data.createdBy || 'Unknown';
+          document.getElementById(
+              'modalTaskPersonInChargeProfile').textContent = data.personInChargeProfile
+              || 'Unknown';
+          document.getElementById('modalTaskPersonInCharge').textContent = data.personInCharge
+              || 'Unknown';
+          document.getElementById('modalTaskStatus').textContent = data.status || 'Unknown';
+          document.getElementById('modalTaskDueDate').textContent = data.dueDate || 'Unknown';
+          document.getElementById('modalTaskCreatedAt').textContent = data.createdDate || 'Unknown';
+
+          const projectInfo = document.querySelector('.project-info');
+          projectInfo.innerHTML =
+              '<a href="/">프로젝트</a> / ' +
+              '<a href="/projects/' + (data.projectId || '') + '">' + (data.projectName || 'Unknown') + '</a> / ' +
+              '<a href="/projects/' + (data.projectId || '') + '/tasks/' + (data.id || '') + '" target="_blank">' +
+              (data.id || 'Unknown') + '</a>';
+
+          // 모달 표시
+          const taskDetailModal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
+          taskDetailModal.show();
+        })
+        .catch(error => {
+          console.error('Error fetching task details:', error);
+          alert('Failed to load task details. Please try again.');
+        });
+      });
+    });
+  }
+
   function addTask() {
     // 입력 값 가져오기
     const title = document.getElementById('taskTitle').value.trim();
     const body = document.getElementById('taskBody').value;
     const label = document.getElementById('taskLabel').value.trim();
     const priority = document.getElementById('taskPriority').value
-    const createdBy = document.getElementById('createdBy').value.trim();
     const personInCharge = document.getElementById('personInCharge').value.trim();
     const dueDate = document.getElementById('dueDate').value;
 
     // 입력 값 검증
-    if (!title || !body || !label || !createdBy || !personInCharge) {
+    if (!title || !body || !label || !personInCharge) {
       alert('All fields are required!');
       return;
     }
 
+    const currentUrl = window.location.href;
+
+    const segments = currentUrl.split('/'); // URL을 "/"로 나눔
+    const projectId = segments[segments.length - 1];
+
     // 서버로 요청 보내기
-    fetch('/addTask', {
+    fetch('/projects/' + projectId + "/tasks", {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -319,7 +334,6 @@
         body,
         label,
         priority,
-        createdBy,
         personInCharge,
         dueDate,
         status: 'TODO' // 기본 상태
@@ -332,6 +346,7 @@
       // 서버에서 반환된 Task 데이터를 사용하여 화면에 반영
       addTaskToUI(task);
       updateFilterOptions(task.personInCharge, task.label); // 필터 옵션 업데이트
+      registerClick();
 
       // 모달 닫기 및 폼 리셋
       const addTaskModal = bootstrap.Modal.getInstance(document.getElementById('addTaskModal'));

@@ -63,15 +63,19 @@
 </head>
 <body>
 <jsp:include page="header.jsp"/>
+
 <div class="container mt-5">
     <div class="register-container">
         <h2 class="register-title">회원가입</h2>
-        <form id="registerForm" action="/register" method="post" onsubmit="return validateForm()">
+        <form id="registerForm" action="/signup" method="POST" onsubmit="return validateAndSubmit()">
             <!-- Username -->
             <div class="mb-3">
                 <label style="float: left;" for="username" class="form-label"> 아이디</label>
                 <input type="text" class="form-control" id="username" name="username" required
                        placeholder="아이디를 입력하세요">
+                <c:if test="${not empty error}">
+                    <div class="text-danger mb-3">${error}</div>
+                </c:if>
             </div>
             <!-- Password -->
             <div class="mb-3">
@@ -101,7 +105,7 @@
     </div>
 </div>
 <script>
-  function validateForm() {
+  function validateAndSubmit() {
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
 
@@ -109,7 +113,8 @@
       alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
       return false;
     }
-    return true;
+
+    return true
   }
 </script>
 </body>

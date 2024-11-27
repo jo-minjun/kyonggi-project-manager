@@ -5,11 +5,15 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ProjectDto {
+public class UserDto {
 
-  private String id;
+  private Long id;
 
-  private String key;
+  private String username;
+
+  private String password;
 
   private String name;
+
+  private String profile;
 }

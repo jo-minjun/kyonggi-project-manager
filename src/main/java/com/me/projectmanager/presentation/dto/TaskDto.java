@@ -16,6 +16,7 @@ public class TaskDto {
 
   private String projectName;
 
+  @Setter
   private String projectId;
 
   private String title;
@@ -31,6 +32,7 @@ public class TaskDto {
 
   private String createdByProfile;
 
+  @Setter
   private String createdBy;
 
   private String personInChargeProfile;

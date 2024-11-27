@@ -107,7 +107,7 @@
 <jsp:include page="taskModal.jsp"/>
 
 <div class="container mt-5">
-    <h1>안녕하세요, <span><%=session.getAttribute("loggedInUser")%></span>님!</h1>
+    <h1>안녕하세요, <span><%=session.getAttribute("loggedInUserName")%></span>님!</h1>
     <br>
 
     <!-- 프로젝트 요약 -->
@@ -180,6 +180,13 @@
           document.getElementById('modalTaskStatus').textContent = data.status || 'Unknown';
           document.getElementById('modalTaskDueDate').textContent = data.dueDate || 'Unknown';
           document.getElementById('modalTaskCreatedAt').textContent = data.createdDate || 'Unknown';
+
+          const projectInfo = document.querySelector('.project-info');
+          projectInfo.innerHTML =
+              '<a href="/">프로젝트</a> / ' +
+              '<a href="/projects/' + (data.projectId || '') + '">' + (data.projectName || 'Unknown') + '</a> / ' +
+              '<a href="/projects/' + (data.projectId || '') + '/tasks/' + (data.id || '') + '" target="_blank">' +
+              (data.id || 'Unknown') + '</a>';
 
           // 모달 표시
           const taskDetailModal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
