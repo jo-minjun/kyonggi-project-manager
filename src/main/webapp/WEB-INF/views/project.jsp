@@ -264,9 +264,10 @@
     taskCards.forEach(task => {
       task.addEventListener('click', () => {
         const taskId = task.getAttribute('data-id');
+        const projectId = task.getAttribute('data-projectId');
 
         // 서버로 AJAX 요청
-        fetch('/getTaskDetails?taskId=' + taskId)
+        fetch('/api/projects/' + projectId + '/tasks/' + taskId)
         .then(response => response.json())
         .then(data => {
           // 서버에서 받은 데이터로 모달 업데이트
@@ -292,6 +293,11 @@
               '<a href="/projects/' + (data.projectId || '') + '">' + (data.projectName || 'Unknown') + '</a> / ' +
               '<a href="/projects/' + (data.projectId || '') + '/tasks/' + (data.id || '') + '" target="_blank">' +
               (data.id || 'Unknown') + '</a>';
+
+          document.getElementById('modalTaskPersonInChargeProfile').src =
+              data.personInChargeProfile;
+          document.getElementById('modalTaskCreatedByProfile').src =
+              data.createdByProfile;
 
           // 모달 표시
           const taskDetailModal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
@@ -326,7 +332,7 @@
     const projectId = segments[segments.length - 1];
 
     // 서버로 요청 보내기
-    fetch('/projects/' + projectId + "/tasks", {
+    fetch('/api/projects/' + projectId + "/tasks", {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({

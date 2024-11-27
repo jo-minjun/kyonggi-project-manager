@@ -213,15 +213,17 @@
                     <div class="additionalInfo">
                         <div class="label additionalInfoKey">담당자:</div>
                         <div class="value">
-                            <span id="modalTaskPersonInChargeProfile"></span> <span
-                                id="modalTaskPersonInCharge"></span>
+                            <img id="modalTaskPersonInChargeProfile" alt="Person In Charge Profile"
+                                 style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+                            <span id="modalTaskPersonInCharge"></span>
                         </div>
                     </div>
                     <div class="additionalInfo">
                         <div class="label additionalInfoKey">생성자:</div>
                         <div class="value">
-                            <span id="modalTaskCreatedByProfile"></span> <span
-                                id="modalTaskCreatedBy"></span>
+                            <img id="modalTaskCreatedByProfile" alt="Created By Profile"
+                                 style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+                            <span id="modalTaskCreatedBy"></span>
                         </div>
                     </div>
                     <div class="additionalInfo">

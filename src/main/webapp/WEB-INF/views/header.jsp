@@ -184,7 +184,7 @@
                     if (username != null) {
                 %>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                    <li><a class="dropdown-item" href="/edit-profile">내 정보 수정</a></li>
+                    <li><a class="dropdown-item" href="/users/<%=session.getAttribute("loggedInUser")%>">내 정보 수정</a></li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>

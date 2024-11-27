@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ProjectSummaryDto {
 
-  private String projectId;
+  private Long projectId;
 
   private String projectName;
 

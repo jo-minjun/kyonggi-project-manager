@@ -9,16 +9,28 @@ public class Task {
 
   private Long id;
 
+  private Long projectId;
+
   private String title;
+
+  private String body;
 
   private Status status;
 
   private Priority priority;
 
-  private Long projectId;
+  private String label;
+
+  private String createdBy;
+
+  private String personInCharge;
+
+  private String createdDate;
+
+  private String dueDate;
 
   public enum Priority {
-    LOW, MEDIUM, HIGH
+    LOW, MEDIUM, HIGH;
   }
 
   public enum Status {

@@ -2,7 +2,6 @@ package com.me.projectmanager.presentation.dto;
 
 import com.me.projectmanager.domain.Task.Priority;
 import com.me.projectmanager.domain.Task.Status;
-import java.time.OffsetDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +16,7 @@ public class TaskDto {
   private String projectName;
 
   @Setter
-  private String projectId;
+  private Long projectId;
 
   private String title;
 

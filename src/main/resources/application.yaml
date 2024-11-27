@@ -1,11 +1,23 @@
-spring.profiles.active: local
-
 spring:
   application:
     name: project-manager
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/project_manager?useUnicode=yes&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: secret
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
 
   mvc:
     view:
       prefix: /WEB-INF/views/
       suffix: .jsp
+
+server:
+  shutdown: immediate
 

@@ -1,17 +1,17 @@
-package com.me.projectmanager.presentation.dto;
+package com.me.projectmanager.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ProjectDto {
+public class CreateProjectCommand {
 
-  private Long id;
+  private String name;
 
   private String key;
 
-  private String name;
+  private String leader;
 
   private String description;
 }

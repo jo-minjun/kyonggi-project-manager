@@ -119,7 +119,7 @@
         body: JSON.stringify({
           name: projectName,
           key: projectKey,
-          lead: projectLead,
+          leader: projectLead,
           description: projectDescription,
         })
       })
