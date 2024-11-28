@@ -1,20 +1,24 @@
 package com.me.projectmanager.presentation;
 
 import com.me.projectmanager.application.ProjectService;
+import com.me.projectmanager.application.TaskService;
+import com.me.projectmanager.application.UserService;
 import com.me.projectmanager.domain.Project;
-import com.me.projectmanager.domain.Task.Priority;
-import com.me.projectmanager.domain.Task.Status;
+import com.me.projectmanager.domain.Task;
+import com.me.projectmanager.domain.command.ChangeTaskStatusCommand;
+import com.me.projectmanager.domain.command.CreateTaskCommand;
 import com.me.projectmanager.presentation.dto.ChangeTaskStatusRequest;
 import com.me.projectmanager.presentation.dto.CreateProjectRequest;
+import com.me.projectmanager.presentation.dto.CreateTaskRequest;
 import com.me.projectmanager.presentation.dto.ProjectDto;
 import com.me.projectmanager.presentation.dto.TaskDto;
 import com.me.projectmanager.presentation.mapper.ProjectDtoMapper;
+import com.me.projectmanager.presentation.mapper.TaskDtoMapper;
 import jakarta.servlet.http.HttpSession;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -31,40 +35,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class ApiController {
 
   private final ProjectService projectService;
+  private final TaskService taskService;
+  private final UserService userService;
 
   public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일");
 
   public static final String SESSION_KEY = "loggedInUser";
   public static final String NAME_SESSION_KEY = "loggedInUserName";
-
-  public static final List<TaskDto> taskDtos = new ArrayList<>(List.of(
-      new TaskDto("1", "knowk", 1L, "Task 1",
-                  "body detail\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ntoo long...",
-                  Status.TODO, Priority.MEDIUM,
-                  "Frontend", "/resources/image/profile.svg", "admin", "/resources/image/profile.svg", "admin",
-                  OffsetDateTime.now(ZoneId.of("Asia/Seoul")).format(formatter),
-                  OffsetDateTime.now(ZoneId.of("Asia/Seoul")).format(formatter)),
-      new TaskDto("2", "knowk", 1L, "Task 2", "body detail\n\n\ntoo long...", Status.TODO,
-                  Priority.LOW, "Backend", "/resources/image/profile.svg", "admin", "/resources/image/profile.svg",
-                  "admin", OffsetDateTime.now(ZoneId.of("Asia/Seoul")).format(formatter),
-                  OffsetDateTime.now(ZoneId.of("Asia/Seoul")).format(formatter)),
-      new TaskDto("3", "knowk", 1L, "Task 3", "body detail\n\n\ntoo long...", Status.TODO,
-                  Priority.HIGH, "Backend", "/resources/image/profile.svg", "admin", "/resources/image/profile.svg",
-                  "admin", OffsetDateTime.now(ZoneId.of("Asia/Seoul")).format(formatter),
-                  OffsetDateTime.now(ZoneId.of("Asia/Seoul")).format(formatter)),
-      new TaskDto("4", "knowk", 1L, "Task 4", "body detail\n\n\ntoo long...", Status.TODO,
-                  Priority.MEDIUM, "Frontend", "/resources/image/profile.svg", "admin", "/resources/image/profile.svg",
-                  "admin", OffsetDateTime.now(ZoneId.of("Asia/Seoul")).format(formatter),
-                  OffsetDateTime.now(ZoneId.of("Asia/Seoul")).format(formatter)),
-      new TaskDto("5", "knowk", 1L, "Task 5", "body detail\n\n\ntoo long...", Status.IN_PROGRESS,
-                  Priority.MEDIUM, "Backend", "/resources/image/profile.svg", "admin2", "/resources/image/profile.svg",
-                  "admin2", OffsetDateTime.now(ZoneId.of("Asia/Seoul")).format(formatter),
-                  OffsetDateTime.now(ZoneId.of("Asia/Seoul")).format(formatter)),
-      new TaskDto("6", "knowk", 1L, "Task 6", "body detail\n\n\ntoo long...", Status.DONE,
-                  Priority.MEDIUM, "Backend", "/resources/image/profile.svg", "admin", "/resources/image/profile.svg",
-                  "admin", OffsetDateTime.now(ZoneId.of("Asia/Seoul")).format(formatter),
-                  OffsetDateTime.now(ZoneId.of("Asia/Seoul")).format(formatter))
-  ));
 
   @PostMapping("/api/projects")
   public HttpEntity<ProjectDto> createProject(@RequestBody CreateProjectRequest request) {
@@ -81,51 +58,68 @@ public class ApiController {
   }
 
   @PostMapping("/api/projects/{projectId}/tasks")
-  public HttpEntity<TaskDto> addTask(@PathVariable Long projectId, @RequestBody TaskDto taskDto, HttpSession session) {
-    ProjectDto projectDto = ProjectDtoMapper.toProjectDto(projectService.findById(projectId));
+  public HttpEntity<TaskDto> addTask(@PathVariable Long projectId, @RequestBody CreateTaskRequest request, HttpSession session) {
+    Project project = projectService.findById(projectId);
+    List<Task> tasks = taskService.findAllByProjectId(projectId).stream()
+        .sorted(Comparator.comparing(Task::getId))
+        .toList();
 
-    taskDto.setId(projectDto.getKey() + "-" + (taskDtos.size() + 1));
-    taskDto.setCreatedBy((String) session.getAttribute(NAME_SESSION_KEY));
-    taskDto.setProjectId(projectId);
+    Long lastId = tasks.isEmpty() ? 0 : tasks.getLast().getId();
 
-    taskDtos.add(taskDto);
+    CreateTaskCommand command = TaskDtoMapper.toCreateTaskCommand(request);
+    command.setProjectId(projectId);
+    command.setKey(project.getKey() + "-" + (lastId + 1));
+    command.setCreatedBy((String) session.getAttribute(SESSION_KEY));
 
-    return ResponseEntity.ok(taskDto);
+    Task task = taskService.create(command);
+
+    return ResponseEntity.ok(mapTaskDto(task));
   }
 
-  @GetMapping("/api/projects/{projectId}/tasks/{taskId}")
-  public HttpEntity<TaskDto> getTaskDetails(@PathVariable Long projectId, @PathVariable String taskId) {
-    TaskDto taskDto = taskDtos.stream()
-        .filter(task -> task.getProjectId().equals(projectId) && task.getId().equals(taskId))
-        .findFirst()
-        .orElse(null);
+  @GetMapping("/api/projects/{projectId}/tasks/{taskKey}")
+  public HttpEntity<TaskDto> getTaskDetails(@PathVariable Long projectId, @PathVariable String taskKey) {
+    Optional<TaskDto> taskDtoOptional = taskService.findAllByProjectId(projectId)
+        .stream()
+        .filter(task -> task.getKey().equals(taskKey))
+        .map(this::mapTaskDto)
+        .findFirst();
 
-    if (taskDto == null) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
+    return taskDtoOptional.<HttpEntity<TaskDto>>map(ResponseEntity::ok)
+        .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 
-    return ResponseEntity.ok(taskDto);
   }
 
   @GetMapping("/api/me/tasks")
   public HttpEntity<List<TaskDto>> getMyTasks(HttpSession session, Model model) {
-    List<TaskDto> userTaskDtos = taskDtos.stream()
-        .filter(taskDto -> taskDto.getPersonInCharge().equals(session.getAttribute(SESSION_KEY))).toList();
+    List<TaskDto> taskDtos = taskService.findAllByPersonInCharge(
+            (String) session.getAttribute(SESSION_KEY))
+        .stream()
+        .map(this::mapTaskDto)
+        .toList();
 
-    model.addAttribute("tasks", userTaskDtos);
+    model.addAttribute("tasks", taskDtos);
 
-    return ResponseEntity.ok(userTaskDtos);
+    return ResponseEntity.ok(taskDtos);
   }
 
-  @PostMapping("/api/projects/{projectId}/tasks/{taskId}/status")
+  @PostMapping("/api/projects/{projectId}/tasks/{taskKey}/status")
   public HttpEntity<Void> updateTaskStatus(@PathVariable Long projectId,
-                                           @PathVariable String taskId,
+                                           @PathVariable String taskKey,
                                            @RequestBody ChangeTaskStatusRequest request) {
-    taskDtos.stream().filter(
-            taskDto -> taskDto.getProjectId().equals(projectId) && taskDto.getId().equals(taskId))
-        .findFirst()
-        .ifPresent(taskDto -> taskDto.setStatus(request.getStatus()));
+
+    ChangeTaskStatusCommand command = TaskDtoMapper.toChangeTaskStatusCommand(request);
+
+    taskService.changeTaskStatus(projectId, taskKey, command);
 
     return ResponseEntity.ok().build();
+  }
+
+  private TaskDto mapTaskDto(Task userTask) {
+    return TaskDtoMapper.toTaskDto(userTask,
+                                   projectService.findById(userTask.getProjectId()),
+                                   userService.findByUsername(
+                                       userTask.getCreatedBy()),
+                                   userService.findByUsername(
+                                       userTask.getPersonInCharge()));
   }
 }

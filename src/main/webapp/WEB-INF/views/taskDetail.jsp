@@ -247,7 +247,7 @@
         <div class="project-info">
             <a href="/">프로젝트</a> /
             <a href="/projects/${task.projectId}">${task.projectName}</a> /
-            <a href="/projects/${task.projectId}/tasks/${task.id}" target="_blank">${task.id}</a>
+            <a href="/projects/${task.projectId}/tasks/${task.key}" target="_blank">${task.key}</a>
         </div>
 
         <!-- Task Title -->
@@ -261,7 +261,7 @@
         <div class="info">
             <div class="section-title">설명</div>
             <div class="info-value" id="taskBody">
-                <p class="info-text">${task.body}</p>
+                <p class="info-text" style="min-height: 80px">${task.body}</p>
                 <textarea class="edit-input">${task.body}</textarea>
                 <button class="edit-btn">수정</button>
             </div>
@@ -345,7 +345,7 @@
         // fetch('/api/updateTaskTitle', {
         //   method: 'POST',
         //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ taskId: '${task.id}', title: updatedTitle })
+        //   body: JSON.stringify({ taskId: '${task.key}', title: updatedTitle })
         // });
 
         titleSection.classList.remove('editing');
@@ -395,7 +395,7 @@
         // fetch('/api/updateTaskBody', {
         //   method: 'POST',
         //   headers: {'Content-Type': 'application/json'},
-        //   body: JSON.stringify({taskId: '${task.id}', body: updatedValue})
+        //   body: JSON.stringify({taskId: '${task.key}', body: updatedValue})
         // })
         // .then(response => response.json())
         // .then(data => console.log('Updated successfully:', data));

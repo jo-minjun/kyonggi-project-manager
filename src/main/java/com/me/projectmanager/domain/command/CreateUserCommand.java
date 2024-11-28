@@ -1,4 +1,4 @@
-package com.me.projectmanager.domain;
+package com.me.projectmanager.domain.command;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

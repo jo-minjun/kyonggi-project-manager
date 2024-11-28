@@ -1,5 +1,6 @@
 package com.me.projectmanager.domain;
 
+import com.me.projectmanager.domain.command.CreateProjectCommand;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

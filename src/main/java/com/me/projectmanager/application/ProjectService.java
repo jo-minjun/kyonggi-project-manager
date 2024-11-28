@@ -1,6 +1,6 @@
 package com.me.projectmanager.application;
 
-import com.me.projectmanager.domain.CreateProjectCommand;
+import com.me.projectmanager.domain.command.CreateProjectCommand;
 import com.me.projectmanager.domain.Project;
 import com.me.projectmanager.domain.repository.ProjectRepository;
 import java.util.List;

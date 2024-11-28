@@ -1,5 +1,6 @@
 package com.me.projectmanager.domain;
 
+import com.me.projectmanager.domain.command.CreateTaskCommand;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,6 +9,8 @@ import lombok.Getter;
 public class Task {
 
   private Long id;
+
+  private String key;
 
   private Long projectId;
 
@@ -28,6 +31,27 @@ public class Task {
   private String createdDate;
 
   private String dueDate;
+
+  public static Task createFrom(CreateTaskCommand command) {
+    return new Task(
+        null,
+        command.getKey(),
+        command.getProjectId(),
+        command.getTitle(),
+        command.getBody(),
+        Status.TODO,
+        command.getPriority(),
+        command.getLabel(),
+        command.getCreatedBy(),
+        command.getPersonInCharge(),
+        command.getCreatedDate(),
+        command.getDueDate()
+    );
+  }
+
+  public void changeStatus(Status status) {
+    this.status = status;
+  }
 
   public enum Priority {
     LOW, MEDIUM, HIGH;

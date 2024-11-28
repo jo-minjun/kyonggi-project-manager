@@ -1,5 +1,6 @@
 package com.me.projectmanager.domain;
 
+import com.me.projectmanager.domain.command.CreateUserCommand;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -21,6 +22,7 @@ public class User {
     this.username = username;
     this.password = password;
     this.name = name;
+    this.profile = "/resources/image/profile.svg";
   }
 
   public static User createFrom(CreateUserCommand command) {

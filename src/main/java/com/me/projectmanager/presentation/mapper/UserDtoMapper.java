@@ -1,6 +1,6 @@
 package com.me.projectmanager.presentation.mapper;
 
-import com.me.projectmanager.domain.CreateUserCommand;
+import com.me.projectmanager.domain.command.CreateUserCommand;
 
 public interface UserDtoMapper {
 

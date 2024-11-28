@@ -1,6 +1,6 @@
 package com.me.projectmanager.presentation.mapper;
 
-import com.me.projectmanager.domain.CreateProjectCommand;
+import com.me.projectmanager.domain.command.CreateProjectCommand;
 import com.me.projectmanager.domain.Project;
 import com.me.projectmanager.presentation.dto.CreateProjectRequest;
 import com.me.projectmanager.presentation.dto.ProjectDto;

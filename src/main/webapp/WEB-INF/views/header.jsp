@@ -70,6 +70,16 @@
         position: relative;
       }
 
+      .task-title-header {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #172B4D;
+        white-space: nowrap; /* 글이 줄 바꿈되지 않도록 설정 */
+        overflow: hidden; /* 넘치는 내용을 숨김 */
+        text-overflow: ellipsis; /* 넘친 내용에 대해 `...` 표시 */
+        max-width: 200px; /* 제목의 최대 폭 설정 */
+      }
+
       .search-input {
         padding: 5px 30px 5px 10px;
         border: none;
@@ -227,7 +237,7 @@
       data.forEach(task => {
         const taskItem = document.createElement('li');
         taskItem.innerHTML =
-            '<a href="/projects/' + task.projectId + '/tasks/' + task.id + '" class="dropdown-item" ' +
+            '<a href="/projects/' + task.projectId + '/tasks/' + task.key + '" class="dropdown-item" ' +
             'style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">' +
             '<div class="task-first-section" style="display: flex; align-items: center;">' +
             '<div class="border-right" style="margin-right: 10px; padding-right: 10px; border-right: 1px solid #ccc;">' +
@@ -236,7 +246,7 @@
             '</h5>' +
             '</div>' +
             '<div>' +
-            '<div class="task-title" style="font-size: 0.9rem; font-weight: bold; color: #172B4D;">' +
+            '<div class="task-title-header" style="font-size: 0.9rem; font-weight: bold; color: #172B4D;">' +
             task.title +
             '</div>' +
             '<span class="task-status" style="' +

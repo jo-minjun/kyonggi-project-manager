@@ -2,16 +2,18 @@ package com.me.projectmanager.presentation;
 
 import static com.me.projectmanager.presentation.ApiController.NAME_SESSION_KEY;
 import static com.me.projectmanager.presentation.ApiController.SESSION_KEY;
-import static com.me.projectmanager.presentation.ApiController.taskDtos;
 
 import com.me.projectmanager.application.ProjectService;
+import com.me.projectmanager.application.TaskService;
 import com.me.projectmanager.application.UserService;
-import com.me.projectmanager.domain.CreateUserCommand;
+import com.me.projectmanager.domain.command.CreateUserCommand;
 import com.me.projectmanager.domain.Project;
+import com.me.projectmanager.domain.Task;
 import com.me.projectmanager.domain.Task.Status;
 import com.me.projectmanager.domain.User;
 import com.me.projectmanager.presentation.dto.ProjectSummaryDto;
 import com.me.projectmanager.presentation.dto.TaskDto;
+import com.me.projectmanager.presentation.mapper.TaskDtoMapper;
 import com.me.projectmanager.presentation.mapper.UserDtoMapper;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class PageController {
 
   private final ProjectService projectService;
+  private final TaskService taskService;
   private final UserService userService;
 
   @GetMapping("/")
@@ -44,12 +47,15 @@ public class PageController {
                                               countByProjectIdAndStatus(project.getId(),
                                                                         Status.DONE)))
         .toList();
-    List<TaskDto> userTaskDtos = taskDtos.stream()
-        .filter(taskDto -> taskDto.getPersonInCharge().equals(session.getAttribute(SESSION_KEY)))
+
+    List<TaskDto> taskDtos = taskService.findAllByPersonInCharge(
+            (String) session.getAttribute(SESSION_KEY))
+        .stream()
+        .map(this::mapTaskDto)
         .toList();
 
     model.addAttribute("projectSummaries", projectSummaryDtos);
-    model.addAttribute("tasks", userTaskDtos);
+    model.addAttribute("tasks", taskDtos);
 
     return "index";
   }
@@ -108,9 +114,12 @@ public class PageController {
 
   @GetMapping("/projects/{projectId}")
   public String getProject(@PathVariable Long projectId, Model model) {
-    model.addAttribute("tasks",
-                       taskDtos.stream().filter(taskDto -> taskDto.getProjectId().equals(projectId))
-                           .toList());
+    List<TaskDto> taskDtos = taskService.findAllByProjectId(projectId)
+        .stream()
+        .map(this::mapTaskDto)
+        .toList();
+
+    model.addAttribute("tasks", taskDtos);
     model.addAttribute("personFilters", taskDtos.stream().map(TaskDto::getPersonInCharge).collect(
         Collectors.toSet()));
     model.addAttribute("labelFilters", taskDtos.stream().map(TaskDto::getLabel).collect(
@@ -119,13 +128,17 @@ public class PageController {
     return "project";
   }
 
-  @GetMapping("/projects/{projectId}/tasks/{taskId}")
-  public String getTaskDetailPage(@PathVariable Long projectId, @PathVariable String taskId,
+  @GetMapping("/projects/{projectId}/tasks/{taskKey}")
+  public String getTaskDetailPage(@PathVariable Long projectId, @PathVariable String taskKey,
                                   Model model) {
+    TaskDto taskDto = taskService.findAllByProjectId(projectId)
+        .stream()
+        .filter(task -> task.getKey().equals(taskKey))
+        .map(this::mapTaskDto)
+        .findFirst()
+        .get();
 
-    model.addAttribute("task", taskDtos.stream().filter(
-            taskDto -> taskDto.getProjectId().equals(projectId) && taskDto.getId().equals(taskId))
-        .findFirst().get());
+    model.addAttribute("task", taskDto);
 
     return "taskDetail";
   }
@@ -138,8 +151,19 @@ public class PageController {
   }
 
   private long countByProjectIdAndStatus(Long id, Status status) {
-    return taskDtos.stream()
-        .filter(taskDto -> taskDto.getStatus() == status && taskDto.getProjectId().equals(id))
+    List<Task> tasks = taskService.findAllByProjectId(id);
+
+    return tasks.stream()
+        .filter(task -> task.getStatus() == status && task.getProjectId().equals(id))
         .count();
+  }
+
+  private TaskDto mapTaskDto(Task userTask) {
+    return TaskDtoMapper.toTaskDto(userTask,
+                                   projectService.findById(userTask.getProjectId()),
+                                   userService.findByUsername(
+                                       userTask.getCreatedBy()),
+                                   userService.findByUsername(
+                                       userTask.getPersonInCharge()));
   }
 }

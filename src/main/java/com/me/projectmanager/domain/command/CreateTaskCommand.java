@@ -1,24 +1,19 @@
-package com.me.projectmanager.presentation.dto;
+package com.me.projectmanager.domain.command;
 
 import com.me.projectmanager.domain.Task.Priority;
 import com.me.projectmanager.domain.Task.Status;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class TaskDto {
+public class CreateTaskCommand {
 
-  private Long id;
-
+  @Setter
   private String key;
 
-  private String projectName;
-
+  @Setter
   private Long projectId;
 
   private String title;
@@ -31,11 +26,8 @@ public class TaskDto {
 
   private String label;
 
-  private String createdByProfile;
-
+  @Setter
   private String createdBy;
-
-  private String personInChargeProfile;
 
   private String personInCharge;
 

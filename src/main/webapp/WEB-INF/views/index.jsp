@@ -133,7 +133,7 @@
     <div class="tasks-list">
         <h2>태스크 목록</h2>
         <c:forEach var="task" items="${tasks}">
-            <div class="task p-3" data-id="${task.id}" data-projectid="${task.projectId}">
+            <div class="task p-3" data-id="${task.key}" data-projectid="${task.projectId}">
                 <div class="task-first-section">
                     <div class="border-right"><h5>${task.projectName}</h5></div>
                     <div>
@@ -186,8 +186,8 @@
           projectInfo.innerHTML =
               '<a href="/">프로젝트</a> / ' +
               '<a href="/projects/' + (data.projectId || '') + '">' + (data.projectName || 'Unknown') + '</a> / ' +
-              '<a href="/projects/' + (data.projectId || '') + '/tasks/' + (data.id || '') + '" target="_blank">' +
-              (data.id || 'Unknown') + '</a>';
+              '<a href="/projects/' + (data.projectId || '') + '/tasks/' + (data.key || '') + '" target="_blank">' +
+              (data.key || 'Unknown') + '</a>';
 
           document.getElementById('modalTaskPersonInChargeProfile').src =
               data.personInChargeProfile;

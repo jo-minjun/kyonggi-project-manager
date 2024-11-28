@@ -1,6 +1,6 @@
 package com.me.projectmanager.application;
 
-import com.me.projectmanager.domain.CreateUserCommand;
+import com.me.projectmanager.domain.command.CreateUserCommand;
 import com.me.projectmanager.domain.User;
 import com.me.projectmanager.domain.repository.UserRepository;
 import java.util.Optional;

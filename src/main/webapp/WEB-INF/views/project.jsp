@@ -118,12 +118,12 @@
                             <c:if test="${task.status == 'TODO'}">
                                 <div class="kanban-item" draggable="true" ondragstart="drag(event)"
                                      data-status="${task.status}"
-                                     data-id="${task.id}"
+                                     data-id="${task.key}"
                                      data-projectId="${task.projectId}">
                                     <div class="label">${task.label}</div>
                                     <h5>${task.title}</h5>
                                     <div class="kanban-item-bottom">
-                                        <div><small><strong>ID:</strong> ${task.id}</small></div>
+                                        <div><small><strong>ID:</strong> ${task.key}</small></div>
                                         <div><strong>담당자:</strong> ${task.personInCharge}</div>
                                     </div>
                                 </div>
@@ -148,12 +148,12 @@
                             <c:if test="${task.status == 'IN_PROGRESS'}">
                                 <div class="kanban-item" draggable="true" ondragstart="drag(event)"
                                      data-status="${task.status}"
-                                     data-id="${task.id}"
+                                     data-id="${task.key}"
                                      data-projectId="${task.projectId}">
                                     <div class="label">${task.label}</div>
                                     <h5>${task.title}</h5>
                                     <div class="kanban-item-bottom">
-                                        <div><small><strong>ID:</strong> ${task.id}</small></div>
+                                        <div><small><strong>ID:</strong> ${task.key}</small></div>
                                         <div><strong>담당자:</strong> ${task.personInCharge}</div>
                                     </div>
                                 </div>
@@ -175,12 +175,12 @@
                             <c:if test="${task.status == 'DONE'}">
                                 <div class="kanban-item" draggable="true" ondragstart="drag(event)"
                                      data-status="${task.status}"
-                                     data-id="${task.id}"
+                                     data-id="${task.key}"
                                      data-projectId="${task.projectId}">
                                     <div class="label">${task.label}</div>
                                     <h5>${task.title}</h5>
                                     <div class="kanban-item-bottom">
-                                        <div><small><strong>ID:</strong> ${task.id}</small></div>
+                                        <div><small><strong>ID:</strong> ${task.key}</small></div>
                                         <div><strong>담당자:</strong> ${task.personInCharge}</div>
                                     </div>
                                 </div>
@@ -291,8 +291,8 @@
           projectInfo.innerHTML =
               '<a href="/">프로젝트</a> / ' +
               '<a href="/projects/' + (data.projectId || '') + '">' + (data.projectName || 'Unknown') + '</a> / ' +
-              '<a href="/projects/' + (data.projectId || '') + '/tasks/' + (data.id || '') + '" target="_blank">' +
-              (data.id || 'Unknown') + '</a>';
+              '<a href="/projects/' + (data.projectId || '') + '/tasks/' + (data.key || '') + '" target="_blank">' +
+              (data.key || 'Unknown') + '</a>';
 
           document.getElementById('modalTaskPersonInChargeProfile').src =
               data.personInChargeProfile;
@@ -372,13 +372,14 @@
     newTask.setAttribute('draggable', 'true');
     newTask.setAttribute('ondragstart', 'drag(event)');
     newTask.setAttribute('data-status', task.status);
-    newTask.setAttribute('data-id', task.id);
+    newTask.setAttribute('data-id', task.key);
+    newTask.setAttribute('data-projectId', task.projectId);
 
     newTask.innerHTML =
         '<div class="label">' + task.label + '</div>' +
         '<h5>' + task.title + '</h5>' +
         '<div class="kanban-item-bottom">' +
-        '<div><small><strong>ID:</strong>' + task.id + '</small></div>' +
+        '<div><small><strong>ID: </strong>' + task.key + '</small></div>' +
         '<div><strong>담당자: </strong>' + task.personInCharge + '</div>' +
         '</div>';
 
