@@ -52,7 +52,7 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
 
-      .my-tasks .dropdown-menu.show {
+      .dropdown-menu.show {
         width: 300px;
       }
 
@@ -66,10 +66,6 @@
         background-color: #f4f5f7;
       }
 
-      .search-box {
-        position: relative;
-      }
-
       .task-title-header {
         font-size: 1rem;
         font-weight: bold;
@@ -78,21 +74,6 @@
         overflow: hidden; /* 넘치는 내용을 숨김 */
         text-overflow: ellipsis; /* 넘친 내용에 대해 `...` 표시 */
         max-width: 200px; /* 제목의 최대 폭 설정 */
-      }
-
-      .search-input {
-        padding: 5px 30px 5px 10px;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-      }
-
-      .search-icon {
-        position: absolute;
-        top: 50%;
-        right: 10px;
-        transform: translateY(-50%);
-        color: #555;
       }
 
       .profile {
@@ -128,6 +109,66 @@
 
       .profile-pic:hover {
         border-color: #FFD700;
+      }
+
+      .search-box {
+        position: relative;
+        width: 300px;
+        margin: 0 auto;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 10px;
+        font-size: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: #0052CC;
+      }
+
+      .search-icon {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        color: #999;
+      }
+
+      .search-results-dropdown {
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        width: 300px;
+        margin-top: 5px;
+      }
+
+      .search-result-item {
+        font-size: 0.9rem;
+        color: #000;
+        transition: background-color 0.3s ease;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .search-result-item:hover {
+        background-color: #f4f5f7;
+      }
+
+      .no-results {
+        padding: 10px;
+        text-align: center;
+        color: #999;
       }
     </style>
 </head>
@@ -178,10 +219,16 @@
 
         <!-- Search and Profile -->
         <div class="d-flex align-items-center">
-            <div class="search-box">
-                <input type="text" placeholder="Search" class="search-input">
-                <i class="fas fa-search search-icon"></i>
+            <div class="search-container position-relative">
+                <!-- 검색 입력 필드 -->
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="검색..." class="search-input">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <!-- 검색 결과 표시 영역 -->
+                <div id="searchResults" class="dropdown-menu search-results-dropdown" style="display: none"></div>
             </div>
+
             <div class="profile ms-4 dropdown">
                 <i class="fas fa-bell notification-icon"></i>
                 <img src="/resources/image/profile.svg" alt="User"
@@ -214,6 +261,84 @@
 <!-- JavaScript -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim();
+
+      // 검색어가 없으면 결과를 숨김
+      if (!query) {
+        searchResults.innerHTML = '';
+        searchResults.style.display = 'none';
+        return;
+      }
+
+      // AJAX 요청 보내기
+      fetch('/api/tasks?query=' + encodeURIComponent(query))
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch search results');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // 검색 결과가 없으면 처리
+        if (data.length === 0) {
+          searchResults.innerHTML = '<li class="no-results">검색 결과가 없습니다.</li>';
+          searchResults.style.display = 'block';
+          return;
+        }
+
+        // 검색 결과 렌더링
+        let resultsHTML = '';
+        data.forEach(function (task) {
+          resultsHTML +=
+              '<li class="dropdown-item" style="margin: 0;">' +
+              '<a href="/projects/' + task.projectId + '/tasks/' + task.key + '" class="dropdown-item" ' +
+              'style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">' +
+              '<div class="task-first-section" style="display: flex; align-items: center;">' +
+              '<div class="border-right" style="margin-right: 10px; padding-right: 10px; border-right: 1px solid #ccc;">' +
+              '<h5 style="margin: 0; font-size: 1rem; font-weight: bold; color: #172B4D;">' +
+              task.projectName +
+              '</h5>' +
+              '</div>' +
+              '<div>' +
+              '<div class="task-title-header" style="font-size: 0.9rem; font-weight: bold; color: #172B4D;">' +
+              task.title +
+              '</div>' +
+              '<span class="task-status" style="' +
+              'text-transform: uppercase; ' +
+              'font-size: 0.85rem; ' +
+              'font-weight: bold; ' +
+              'padding: 2px 8px; ' +
+              'border-radius: 4px; ' +
+              'background-color: ' + getStatusColor(task.status) + ';' +
+              'color: ' + getStatusTextColor(task.status) + ';">' +
+              getStatusText(task.status) +
+              '</span>' +
+              '</div>' +
+              '</div>' +
+              '</a>';
+              '</li>';
+        });
+        searchResults.innerHTML = resultsHTML;
+        searchResults.style.display = 'block';
+      })
+      .catch(error => {
+        console.error('Search error:', error);
+        searchResults.innerHTML = '<li class="no-results text-danger">오류가 발생했습니다.</li>';
+        searchResults.style.display = 'block';
+      });
+    });
+
+    // 클릭 시 검색 결과 닫기
+    document.addEventListener('click', (event) => {
+      if (!searchResults.contains(event.target) && event.target !== searchInput) {
+        searchResults.style.display = 'none';
+      }
+    });
+
     fetch('/api/me')
     .then(response => {
       if (!response.ok) {

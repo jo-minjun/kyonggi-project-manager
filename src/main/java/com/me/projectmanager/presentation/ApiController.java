@@ -167,6 +167,16 @@ public class ApiController {
     return ResponseEntity.ok().build();
   }
 
+  @GetMapping("/api/tasks")
+  public HttpEntity<List<TaskDto>> searchByKeyword(@RequestParam String query) {
+    List<TaskDto> taskDtos = taskService.searchByKeyword(query)
+        .stream()
+        .map(this::mapTaskDto)
+        .toList();
+
+    return ResponseEntity.ok(taskDtos);
+  }
+
   private TaskDto mapTaskDto(Task userTask) {
     return TaskDtoMapper.toTaskDto(userTask,
                                    projectService.findById(userTask.getProjectId()),

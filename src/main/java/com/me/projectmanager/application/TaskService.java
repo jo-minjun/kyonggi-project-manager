@@ -76,4 +76,12 @@ public class TaskService {
 
     taskRepository.update(task);
   }
+
+  @Transactional(readOnly = true)
+  public List<Task> searchByKeyword(String query) {
+    return taskRepository.findAll().stream()
+        .filter(
+            task -> task.getTitle().contains(query) || task.getBody().contains(query))
+        .toList();
+  }
 }
