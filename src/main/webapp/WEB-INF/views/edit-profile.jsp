@@ -132,16 +132,20 @@
     <div class="form-group">
         <label class="form-label">프로필 사진</label>
         <div class="profile-pic-container">
-            <img src="/resources/image/profile.svg" alt="Profile Picture" class="profile-pic" id="profilePicturePreview">
+            <img src="/resources/image/profile.svg" alt="Profile Picture" class="profile-pic"
+                 id="profilePicturePreview">
             <input type="file" accept="image/*" id="profilePictureInput" style="display: none;">
-            <button class="upload-btn" onclick="document.getElementById('profilePictureInput').click();">사진 변경</button>
+            <button class="upload-btn"
+                    onclick="document.getElementById('profilePictureInput').click();">사진 변경
+            </button>
         </div>
     </div>
 
     <!-- Name -->
     <div class="form-group">
         <label for="name" class="form-label">이름</label>
-        <input type="text" id="name" class="form-input" placeholder="이름을 입력하세요" value="${user.name}">
+        <input type="text" id="name" class="form-input" placeholder="이름을 입력하세요"
+               value="${user.name}">
         <div id="nameError" class="form-error"></div>
     </div>
 
@@ -162,12 +166,24 @@
     <!-- Save and Cancel Buttons -->
     <div>
         <button class="save-btn" id="saveProfileBtn">저장</button>
-        <button class="cancel-btn" onclick="window.location.href='/profile';">취소</button>
+        <button class="cancel-btn" onclick="window.location.href='/';">취소</button>
     </div>
 </div>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    fetch('/api/me')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch user');
+      }
+      return response.json();
+    })
+    .then(data => {
+      const profilePic = document.getElementById('profilePicturePreview');
+      profilePic.src = data.profile || '/resources/image/profile.svg';
+    })
+
     const profilePictureInput = document.getElementById('profilePictureInput');
     const profilePicturePreview = document.getElementById('profilePicturePreview');
     const saveProfileBtn = document.getElementById('saveProfileBtn');
@@ -191,7 +207,7 @@
     });
 
     // Validate and save profile
-    saveProfileBtn.addEventListener('click', () => {
+    saveProfileBtn.addEventListener('click', async () => {
       let isValid = true;
 
       // Reset errors
@@ -214,12 +230,33 @@
       }
 
       if (isValid) {
-        alert('프로필이 성공적으로 저장되었습니다.');
-        // 여기에서 AJAX 요청을 통해 서버로 변경사항 전송 가능
-        // fetch('/api/updateProfile', { method: 'POST', body: formData })
+        const formData = new FormData();
+        formData.append('name', nameInput.value.trim());
+        if (passwordInput.value.trim() !== '') {
+          formData.append('password', passwordInput.value.trim());
+        }
+        if (profilePictureInput.files[0]) {
+          formData.append('profilePicture', profilePictureInput.files[0]);
+        }
+
+        fetch('/api/me', {
+          method: 'PATCH',
+          body: formData,
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('프로필 변경에 실패했습니다.');
+          }
+          return response;
+        })
+        .then(data => {
+          alert('프로필이 성공적으로 변경되었습니다.');
+          window.location.href = '/';
+        })
       }
     });
   });
+
 </script>
 </body>
 </html>

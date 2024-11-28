@@ -5,6 +5,7 @@ import com.me.projectmanager.application.TaskService;
 import com.me.projectmanager.application.UserService;
 import com.me.projectmanager.domain.Project;
 import com.me.projectmanager.domain.Task;
+import com.me.projectmanager.domain.User;
 import com.me.projectmanager.domain.command.ChangeTaskBodyCommand;
 import com.me.projectmanager.domain.command.ChangeTaskStatusCommand;
 import com.me.projectmanager.domain.command.ChangeTaskTitleCommand;
@@ -16,9 +17,12 @@ import com.me.projectmanager.presentation.dto.CreateProjectRequest;
 import com.me.projectmanager.presentation.dto.CreateTaskRequest;
 import com.me.projectmanager.presentation.dto.ProjectDto;
 import com.me.projectmanager.presentation.dto.TaskDto;
+import com.me.projectmanager.presentation.dto.UserDto;
 import com.me.projectmanager.presentation.mapper.ProjectDtoMapper;
 import com.me.projectmanager.presentation.mapper.TaskDtoMapper;
+import com.me.projectmanager.presentation.mapper.UserDtoMapper;
 import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +37,8 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequiredArgsConstructor
@@ -60,7 +66,8 @@ public class ApiController {
   }
 
   @PostMapping("/api/projects/{projectId}/tasks")
-  public HttpEntity<TaskDto> addTask(@PathVariable Long projectId, @RequestBody CreateTaskRequest request, HttpSession session) {
+  public HttpEntity<TaskDto> addTask(@PathVariable Long projectId,
+                                     @RequestBody CreateTaskRequest request, HttpSession session) {
     Project project = projectService.findById(projectId);
     List<Task> tasks = taskService.findAllByProjectId(projectId).stream()
         .sorted(Comparator.comparing(Task::getId))
@@ -79,7 +86,8 @@ public class ApiController {
   }
 
   @GetMapping("/api/projects/{projectId}/tasks/{taskKey}")
-  public HttpEntity<TaskDto> getTaskDetails(@PathVariable Long projectId, @PathVariable String taskKey) {
+  public HttpEntity<TaskDto> getTaskDetails(@PathVariable Long projectId,
+                                            @PathVariable String taskKey) {
     Optional<TaskDto> taskDtoOptional = taskService.findAllByProjectId(projectId)
         .stream()
         .filter(task -> task.getKey().equals(taskKey))
@@ -89,19 +97,6 @@ public class ApiController {
     return taskDtoOptional.<HttpEntity<TaskDto>>map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 
-  }
-
-  @GetMapping("/api/me/tasks")
-  public HttpEntity<List<TaskDto>> getMyTasks(HttpSession session, Model model) {
-    List<TaskDto> taskDtos = taskService.findAllByPersonInCharge(
-            (String) session.getAttribute(SESSION_KEY))
-        .stream()
-        .map(this::mapTaskDto)
-        .toList();
-
-    model.addAttribute("tasks", taskDtos);
-
-    return ResponseEntity.ok(taskDtos);
   }
 
   @PatchMapping("/api/projects/{projectId}/tasks/{taskKey}/status")
@@ -118,8 +113,8 @@ public class ApiController {
 
   @PatchMapping("/api/projects/{projectId}/tasks/{taskKey}/body")
   public HttpEntity<Void> updateTaskBody(@PathVariable Long projectId,
-                                           @PathVariable String taskKey,
-                                           @RequestBody ChangeTaskBodyRequest request) {
+                                         @PathVariable String taskKey,
+                                         @RequestBody ChangeTaskBodyRequest request) {
 
     ChangeTaskBodyCommand command = TaskDtoMapper.toChangeTaskBodyCommand(request);
 
@@ -130,12 +125,44 @@ public class ApiController {
 
   @PatchMapping("/api/projects/{projectId}/tasks/{taskKey}/title")
   public HttpEntity<Void> updateTaskTitle(@PathVariable Long projectId,
-                                         @PathVariable String taskKey,
-                                         @RequestBody ChangeTaskTitleRequest request) {
+                                          @PathVariable String taskKey,
+                                          @RequestBody ChangeTaskTitleRequest request) {
 
     ChangeTaskTitleCommand command = TaskDtoMapper.toChangeTaskTitleCommand(request);
 
     taskService.changeTaskTitle(projectId, taskKey, command);
+
+    return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/api/me/tasks")
+  public HttpEntity<List<TaskDto>> getMyTasks(HttpSession session, Model model) {
+    List<TaskDto> taskDtos = taskService.findAllByPersonInCharge(
+            (String) session.getAttribute(SESSION_KEY))
+        .stream()
+        .map(this::mapTaskDto)
+        .toList();
+
+    model.addAttribute("tasks", taskDtos);
+
+    return ResponseEntity.ok(taskDtos);
+  }
+
+  @GetMapping("/api/me")
+  public HttpEntity<UserDto> getProfile(HttpSession session, Model model) {
+    User user = userService.findByUsername((String) session.getAttribute(SESSION_KEY));
+
+    return ResponseEntity.ok(UserDtoMapper.toUserDto(user));
+  }
+
+  @PatchMapping("/api/me")
+  public HttpEntity<Void> updateProfile(HttpSession session,
+                                        @RequestParam("name") String name,
+                                        @RequestParam(value = "password", required = false) String password,
+                                        @RequestParam(value = "profilePicture", required = false) MultipartFile profilePicture)
+      throws IOException {
+    userService.updateProfile((String) session.getAttribute(SESSION_KEY), name, password,
+                              profilePicture);
 
     return ResponseEntity.ok().build();
   }

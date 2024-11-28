@@ -131,7 +131,7 @@
 
     <!-- 전체 태스크 목록 -->
     <div class="tasks-list">
-        <h2>태스크 목록</h2>
+        <h2>나의 태스크 목록</h2>
         <c:forEach var="task" items="${tasks}">
             <div class="task p-3" data-id="${task.key}" data-projectid="${task.projectId}">
                 <div class="task-first-section">

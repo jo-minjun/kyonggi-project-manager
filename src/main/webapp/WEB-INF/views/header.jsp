@@ -215,6 +215,17 @@
 <!-- JavaScript -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    fetch('/api/me')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch user');
+      }
+      return response.json();
+    })
+    .then(data => {
+      const profilePic = document.getElementById('profileDropdown');
+      profilePic.src = data.profile || '/resources/image/profile.svg';
+    })
 
     const tasksMenu = document.getElementById('tasksMenu');
 

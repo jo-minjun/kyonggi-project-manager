@@ -28,4 +28,16 @@ public class User {
   public static User createFrom(CreateUserCommand command) {
     return new User(command.getUsername(), command.getPassword(), command.getName());
   }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  public void setProfile(String savedPath) {
+    this.profile = savedPath;
+  }
 }
