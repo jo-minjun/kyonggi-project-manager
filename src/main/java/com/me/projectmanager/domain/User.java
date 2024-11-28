@@ -16,4 +16,14 @@ public class User {
   private String name;
 
   private String profile;
+
+  public User(String username, String password, String name) {
+    this.username = username;
+    this.password = password;
+    this.name = name;
+  }
+
+  public static User createFrom(CreateUserCommand command) {
+    return new User(command.getUsername(), command.getPassword(), command.getName());
+  }
 }

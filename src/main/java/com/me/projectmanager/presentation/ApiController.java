@@ -8,7 +8,6 @@ import com.me.projectmanager.presentation.dto.ChangeTaskStatusRequest;
 import com.me.projectmanager.presentation.dto.CreateProjectRequest;
 import com.me.projectmanager.presentation.dto.ProjectDto;
 import com.me.projectmanager.presentation.dto.TaskDto;
-import com.me.projectmanager.presentation.dto.UserDto;
 import com.me.projectmanager.presentation.mapper.ProjectDtoMapper;
 import jakarta.servlet.http.HttpSession;
 import java.time.OffsetDateTime;
@@ -37,10 +36,6 @@ public class ApiController {
 
   public static final String SESSION_KEY = "loggedInUser";
   public static final String NAME_SESSION_KEY = "loggedInUserName";
-
-  public static final List<UserDto> userDtos = new ArrayList<>(List.of(
-      new UserDto(1L, "admin", "password", "관리자", null)
-  ));
 
   public static final List<TaskDto> taskDtos = new ArrayList<>(List.of(
       new TaskDto("1", "knowk", 1L, "Task 1",
