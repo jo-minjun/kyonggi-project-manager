@@ -144,38 +144,37 @@
             <a href="/" style="text-decoration: none">
                 <span class="title ms-3">Project Board</span>
             </a>
+
+
+            <!-- Navigation Menu -->
+            <nav class="nav">
+                <a style="margin-left: 32px" href="/" class="nav-link">Home</a>
+
+                <div class="dropdown my-tasks">
+                    <a href="#" class="nav-link dropdown-toggle" id="tasksDropdown"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        내 작업
+                    </a>
+                    <ul class="dropdown-menu" id="tasksMenu" aria-labelledby="tasksDropdown">
+                    </ul>
+                </div>
+
+                <!-- Projects Dropdown -->
+                <div class="dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" id="projectsDropdown"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        프로젝트
+                    </a>
+                    <ul class="dropdown-menu" id="projectsMenu" aria-labelledby="projectsDropdown">
+                        <!-- 고정된 "프로젝트 만들기" 항목 -->
+                        <li class="create-project text-primary" style="padding-left: 16px">프로젝트 만들기</li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                    </ul>
+                </div>
+            </nav>
         </div>
-
-        <!-- Navigation Menu -->
-        <nav class="nav">
-            <a href="#dashboard" class="nav-link">Dashboard</a>
-            <a href="#board" class="nav-link">Board</a>
-            <a href="#reports" class="nav-link">Reports</a>
-
-            <div class="dropdown my-tasks">
-                <a href="#" class="nav-link dropdown-toggle" id="tasksDropdown"
-                   data-bs-toggle="dropdown" aria-expanded="false">
-                    내 작업
-                </a>
-                <ul class="dropdown-menu" id="tasksMenu" aria-labelledby="tasksDropdown">
-                </ul>
-            </div>
-
-            <!-- Projects Dropdown -->
-            <div class="dropdown">
-                <a href="#" class="nav-link dropdown-toggle" id="projectsDropdown"
-                   data-bs-toggle="dropdown" aria-expanded="false">
-                    프로젝트
-                </a>
-                <ul class="dropdown-menu" id="projectsMenu" aria-labelledby="projectsDropdown">
-                    <!-- 고정된 "프로젝트 만들기" 항목 -->
-                    <li class="create-project text-primary" style="padding-left: 16px">프로젝트 만들기</li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                </ul>
-            </div>
-        </nav>
 
         <!-- Search and Profile -->
         <div class="d-flex align-items-center">
