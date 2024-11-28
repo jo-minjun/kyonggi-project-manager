@@ -251,7 +251,7 @@
         </div>
 
         <!-- Task Title -->
-        <div class="title-section" id="titleSection">
+        <div class="title-section" id="titleSection" data-id="${task.key}" data-projectId="${task.projectId}">
             <h1 class="title-text">${task.title}</h1>
             <input type="text" class="edit-title-input" value="${task.title}">
             <button class="edit-title-btn">수정</button>
@@ -260,7 +260,7 @@
         <!-- Task Description -->
         <div class="info">
             <div class="section-title">설명</div>
-            <div class="info-value" id="taskBody">
+            <div class="info-value" id="taskBody" data-id="${task.key}" data-projectId="${task.projectId}">
                 <p class="info-text" style="min-height: 80px">${task.body}</p>
                 <textarea class="edit-input">${task.body}</textarea>
                 <button class="edit-btn">수정</button>
@@ -304,11 +304,16 @@
             </div>
             <div class="row mb-2">
                 <div class="info-key col-md-3">담당자:</div>
-                <div class="info-value col-md-9">${task.personInCharge}</div>
+                <div class="info-value col-md-9"><img src="${task.personInChargeProfile}"
+                                                      alt="Created By Profile"
+                                                      style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">${task.personInCharge}</div>
             </div>
             <div class="row mb-2">
                 <div class="info-key col-md-3">생성자:</div>
-                <div class="info-value col-md-9">${task.createdBy}</div>
+                <div class="info-value col-md-9"><img src="${task.createdByProfile}"
+                                                      alt="Created By Profile"
+                                                      style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">${task.createdBy}
+                </div>
             </div>
             <div class="row mb-2">
                 <div class="info-key col-md-3">생성일:</div>
@@ -341,15 +346,18 @@
       if (updatedTitle) {
         titleText.textContent = updatedTitle;
 
-        // 서버에 제목 업데이트 요청
-        // fetch('/api/updateTaskTitle', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ taskId: '${task.key}', title: updatedTitle })
-        // });
+        fetch('/api/projects/' + titleSection.dataset.projectid + '/tasks/' + titleSection.dataset.id + '/title', {
+          method: 'PATCH',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            title: updatedTitle
+          })
+        })
+        .then(response => response.json())
+        .then(data => console.log('Updated successfully:', data));
 
         titleSection.classList.remove('editing');
-        alert('제목이 수정되었습니다: ' + updatedTitle);
+        alert('제목이 수정되었습니다.');
       } else {
         alert('제목을 입력해주세요.');
       }
@@ -390,17 +398,17 @@
       if (updatedValue !== '') {
         infoText.textContent = updatedValue;
 
-        // AJAX 요청을 통해 서버에 수정 내용을 전송할 수 있음
-        // 예시:
-        // fetch('/api/updateTaskBody', {
-        //   method: 'POST',
-        //   headers: {'Content-Type': 'application/json'},
-        //   body: JSON.stringify({taskId: '${task.key}', body: updatedValue})
-        // })
-        // .then(response => response.json())
-        // .then(data => console.log('Updated successfully:', data));
+        fetch('/api/projects/' + taskBody.dataset.projectid + '/tasks/' + taskBody.dataset.id + '/body', {
+          method: 'PATCH',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            body: updatedValue
+          })
+        })
+        .then(response => response.json())
+        .then(data => console.log('Updated successfully:', data));
 
-        alert('설명이 수정되었습니다: ' + updatedValue);
+        alert('설명이 수정되었습니다.');
         taskBody.classList.remove('editing');
       } else {
         alert('설명을 입력해주세요.');

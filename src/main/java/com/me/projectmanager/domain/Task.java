@@ -53,6 +53,14 @@ public class Task {
     this.status = status;
   }
 
+  public void changeBody(String body) {
+    this.body = body;
+  }
+
+  public void changeTitle(String title) {
+    this.title = title;
+  }
+
   public enum Priority {
     LOW, MEDIUM, HIGH;
   }

@@ -241,7 +241,7 @@
 
     // 서버로 상태 업데이트 요청 (AJAX)
     fetch('/api/projects/' + draggedItem.dataset.projectid + '/tasks/' + draggedItem.dataset.id + '/status', {
-      method: 'POST',
+      method: 'PATCH',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         status: status

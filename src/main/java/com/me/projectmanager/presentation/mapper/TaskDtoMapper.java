@@ -3,9 +3,13 @@ package com.me.projectmanager.presentation.mapper;
 import com.me.projectmanager.domain.Project;
 import com.me.projectmanager.domain.Task;
 import com.me.projectmanager.domain.User;
+import com.me.projectmanager.domain.command.ChangeTaskBodyCommand;
 import com.me.projectmanager.domain.command.ChangeTaskStatusCommand;
+import com.me.projectmanager.domain.command.ChangeTaskTitleCommand;
 import com.me.projectmanager.domain.command.CreateTaskCommand;
+import com.me.projectmanager.presentation.dto.ChangeTaskBodyRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskStatusRequest;
+import com.me.projectmanager.presentation.dto.ChangeTaskTitleRequest;
 import com.me.projectmanager.presentation.dto.CreateTaskRequest;
 import com.me.projectmanager.presentation.dto.TaskDto;
 import java.time.OffsetDateTime;
@@ -40,5 +44,13 @@ public interface TaskDtoMapper {
 
   static ChangeTaskStatusCommand toChangeTaskStatusCommand(ChangeTaskStatusRequest request) {
     return new ChangeTaskStatusCommand(request.getStatus());
+  }
+
+  static ChangeTaskBodyCommand toChangeTaskBodyCommand(ChangeTaskBodyRequest request) {
+    return new ChangeTaskBodyCommand(request.getBody());
+  }
+
+  static ChangeTaskTitleCommand toChangeTaskTitleCommand(ChangeTaskTitleRequest request) {
+    return new ChangeTaskTitleCommand(request.getTitle());
   }
 }

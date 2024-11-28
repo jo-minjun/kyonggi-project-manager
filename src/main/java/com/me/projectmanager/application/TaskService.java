@@ -1,7 +1,9 @@
 package com.me.projectmanager.application;
 
 import com.me.projectmanager.domain.Task;
+import com.me.projectmanager.domain.command.ChangeTaskBodyCommand;
 import com.me.projectmanager.domain.command.ChangeTaskStatusCommand;
+import com.me.projectmanager.domain.command.ChangeTaskTitleCommand;
 import com.me.projectmanager.domain.command.CreateTaskCommand;
 import com.me.projectmanager.domain.repository.TaskRepository;
 import java.util.List;
@@ -45,6 +47,32 @@ public class TaskService {
         .orElseThrow();
 
     task.changeStatus(command.getStatus());
+
+    taskRepository.update(task);
+  }
+
+  @Transactional
+  public void changeTaskBody(Long projectId, String taskKey, ChangeTaskBodyCommand command) {
+    Task task = taskRepository.findAll().stream()
+        .filter(t -> t.getProjectId().equals(projectId))
+        .filter(t -> t.getKey().equals(taskKey))
+        .findFirst()
+        .orElseThrow();
+
+    task.changeBody(command.getBody());
+
+    taskRepository.update(task);
+  }
+
+  @Transactional
+  public void changeTaskTitle(Long projectId, String taskKey, ChangeTaskTitleCommand command) {
+    Task task = taskRepository.findAll().stream()
+        .filter(t -> t.getProjectId().equals(projectId))
+        .filter(t -> t.getKey().equals(taskKey))
+        .findFirst()
+        .orElseThrow();
+
+    task.changeTitle(command.getTitle());
 
     taskRepository.update(task);
   }
