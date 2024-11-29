@@ -3,6 +3,7 @@ package com.me.projectmanager.infrastructure.repository;
 import com.me.projectmanager.domain.User;
 import com.me.projectmanager.domain.repository.UserRepository;
 import com.me.projectmanager.infrastructure.mapper.UserEntityMapper;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -21,5 +22,12 @@ public class UserRepositoryImpl implements UserRepository {
   @Override
   public User save(User user) {
     return UserEntityMapper.toUser(userEntityRepository.save(UserEntityMapper.toUserEntity(user)));
+  }
+
+  @Override
+  public List<User> findAll() {
+    return userEntityRepository.findAll().stream()
+        .map(UserEntityMapper::toUser)
+        .toList();
   }
 }

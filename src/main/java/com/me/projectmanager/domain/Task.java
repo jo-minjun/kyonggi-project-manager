@@ -53,12 +53,24 @@ public class Task {
     this.status = status;
   }
 
+  public void changePriority(Priority priority) {
+    this.priority = priority;
+  }
+
+  public void changeAssignee(String personInCharge) {
+    this.personInCharge = personInCharge;
+  }
+
   public void changeBody(String body) {
     this.body = body;
   }
 
   public void changeTitle(String title) {
     this.title = title;
+  }
+
+  public void changeDueDate(String dueDate) {
+    this.dueDate = dueDate;
   }
 
   public enum Priority {

@@ -235,6 +235,30 @@
         background-color: #e0e0e0;
         color: #5e6c84;
       }
+
+      #dueDatePicker {
+        width: 70%;
+        padding: 8px 12px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 8px; /* 모서리를 둥글게 */
+        background-color: #f9f9f9;
+        transition: all 0.3s ease; /* 애니메이션 효과 */
+      }
+
+      /* 마우스 올릴 때 */
+      #dueDatePicker:hover {
+        border-color: #0052cc;
+        background-color: #ffffff;
+      }
+
+      /* 입력 필드에 포커스가 있을 때 */
+      #dueDatePicker:focus {
+        outline: none;
+        border-color: #0052cc;
+        box-shadow: 0 0 5px rgba(0, 82, 204, 0.5); /* 파란색 그림자 */
+        background-color: #ffffff;
+      }
     </style>
 </head>
 <body>
@@ -251,7 +275,8 @@
         </div>
 
         <!-- Task Title -->
-        <div class="title-section" id="titleSection" data-id="${task.key}" data-projectId="${task.projectId}">
+        <div class="title-section" id="titleSection" data-id="${task.key}"
+             data-projectId="${task.projectId}">
             <h1 class="title-text">${task.title}</h1>
             <input type="text" class="edit-title-input" value="${task.title}">
             <button class="edit-title-btn">수정</button>
@@ -260,7 +285,8 @@
         <!-- Task Description -->
         <div class="info">
             <div class="section-title">설명</div>
-            <div class="info-value" id="taskBody" data-id="${task.key}" data-projectId="${task.projectId}">
+            <div class="info-value" id="taskBody" data-id="${task.key}"
+                 data-projectId="${task.projectId}">
                 <p class="info-text" style="min-height: 80px">${task.body}</p>
                 <textarea class="edit-input">${task.body}</textarea>
                 <button class="edit-btn">수정</button>
@@ -280,33 +306,93 @@
             </div>
             <div class="row mb-2">
                 <div class="info-key col-md-3">상태:</div>
-                <div class="info-value col-md-9">
-                <span class="badge
-                  <c:choose>
-                    <c:when test="${task.status == 'TODO'}">status-todo</c:when>
-                    <c:when test="${task.status == 'IN_PROGRESS'}">status-in-progress</c:when>
-                    <c:when test="${task.status == 'DONE'}">status-done</c:when>
-                  </c:choose>
-                ">${task.status}</span>
+                <div class="info-value col-md-9 position-relative">
+                <span id="statusBadge"
+                      class="badge
+                      <c:choose>
+                        <c:when test="${task.status == 'TODO'}">status-todo</c:when>
+                        <c:when test="${task.status == 'IN_PROGRESS'}">status-in-progress</c:when>
+                        <c:when test="${task.status == 'DONE'}">status-done</c:when>
+                      </c:choose>"
+                      style="cursor: pointer;"
+                      data-projectId="${task.projectId}" data-key="${task.key}">
+                    ${task.status}
+                </span>
+                    <!-- 드롭다운 메뉴 -->
+                    <ul id="statusDropdown" class="dropdown-menu" style="display: none;">
+                        <li class="dropdown-item status-option" data-status="TODO">
+                            <div class="badge status-todo">TODO</div>
+                        </li>
+                        <li class="dropdown-item status-option" data-status="IN_PROGRESS">
+                            <div class="badge status-in-progress">IN
+                                PROGRESS
+                            </div>
+                        </li>
+                        <li class="dropdown-item status-option" data-status="DONE">
+                            <div class="badge status-done">DONE</div>
+                        </li>
+                    </ul>
                 </div>
             </div>
             <div class="row mb-2">
                 <div class="info-key col-md-3">우선순위:</div>
                 <div class="info-value col-md-9">
-                <span class="badge
-                  <c:choose>
-                    <c:when test="${task.priority == 'LOW'}">priority-low</c:when>
-                    <c:when test="${task.priority == 'MEDIUM'}">priority-medium</c:when>
-                    <c:when test="${task.priority == 'HIGH'}">priority-high</c:when>
-                  </c:choose>
-                ">${task.priority}</span>
+                <span id="priorityBadge"
+                      class="badge
+                      <c:choose>
+                        <c:when test="${task.priority == 'LOW'}">priority-low</c:when>
+                        <c:when test="${task.priority == 'MEDIUM'}">priority-medium</c:when>
+                        <c:when test="${task.priority == 'HIGH'}">priority-high</c:when>
+                      </c:choose>"
+                      style="cursor: pointer;"
+                      data-projectId="${task.projectId}" data-key="${task.key}">
+                    ${task.priority}
+                </span>
+                    <!-- 드롭다운 메뉴 -->
+                    <ul id="priorityDropdown" class="dropdown-menu" style="display: none;">
+                        <li class="dropdown-item priority-option" data-priority="LOW">
+                            <div class="badge priority-low">LOW</div>
+                        </li>
+                        <li class="dropdown-item priority-option" data-priority="MEDIUM">
+                            <div class="badge priority-medium">MEDIUM</div>
+                        </li>
+                        <li class="dropdown-item priority-option" data-priority="HIGH">
+                            <div class="badge priority-high">HIGH</div>
+                        </li>
+                    </ul>
                 </div>
             </div>
             <div class="row mb-2">
                 <div class="info-key col-md-3">담당자:</div>
-                <div class="info-value col-md-9"><img src="${task.personInChargeProfile}"
-                                                      alt="Created By Profile"
-                                                      style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">${task.personInCharge}</div>
+                <div class="info-value col-md-9 position-relative">
+                <span style="cursor: pointer;"
+                      data-projectId="${task.projectId}" data-key="${task.key}"
+                      id="assigneeBadge">
+                    <img src="${task.personInChargeProfile}"
+                         alt="Created By Profile"
+                         style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">${task.personInCharge}
+                </span>
+                    <!-- 드롭다운 메뉴 -->
+                    <ul id="assigneeDropdown" class="dropdown-menu" style="display: none;">
+                        <c:forEach var="user" items="${users}">
+                            <li class="dropdown-item assignee-option"
+                                data-assignee="${user.username}">
+                                <img src="${user.profile}" alt="${user.username}"
+                                     style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+                                    ${user.username}
+                            </li>
+                        </c:forEach>
+                    </ul>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="info-key col-md-3">목표일:</div>
+                <div class="info-value col-md-9">
+                    <input type="date" id="dueDatePicker"
+                           value="${task.dueDate}"
+                           data-projectId="${task.projectId}"
+                           data-key="${task.key}" />
+                </div>
             </div>
             <div class="row mb-2">
                 <div class="info-key col-md-3">생성자:</div>
@@ -319,16 +405,220 @@
                 <div class="info-key col-md-3">생성일:</div>
                 <div class="info-value col-md-9">${task.createdDate}</div>
             </div>
-            <div class="row mb-2">
-                <div class="info-key col-md-3">목표일:</div>
-                <div class="info-value col-md-9">${task.dueDate}</div>
-            </div>
         </div>
     </div>
 
 </div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    const dueDatePicker = document.getElementById('dueDatePicker');
+
+    // 날짜 변경 시 목표일 업데이트
+    dueDatePicker.addEventListener('change', function () {
+      const selectedDate = dueDatePicker.value;
+
+      if (selectedDate) {
+        // AJAX 요청으로 목표일 업데이트
+        fetch('/api/projects/' + dueDatePicker.dataset.projectid + '/tasks/' + dueDatePicker.dataset.key + '/due-date', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dueDate: selectedDate })
+        })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error('Failed to update due date');
+          }
+          return response;
+        })
+        .then(function (data) {
+        })
+        .catch(function (error) {
+          console.error('Error updating due date:', error);
+          alert('목표일 업데이트 중 오류가 발생했습니다.');
+        });
+      }
+    });
+
+    const assigneeBadge = document.getElementById('assigneeBadge');
+    const assigneeDropdown = document.getElementById('assigneeDropdown');
+
+    // 드롭다운 표시/숨김 토글
+    assigneeBadge.addEventListener('click', function () {
+      if (assigneeDropdown.style.display === 'none') {
+        assigneeDropdown.style.display = 'block';
+      } else {
+        assigneeDropdown.style.display = 'none';
+      }
+    });
+
+    // 드롭다운 옵션 클릭 시 담당자 업데이트
+    const assigneeOptions = document.querySelectorAll('.assignee-option');
+    assigneeOptions.forEach(function (option) {
+      option.addEventListener('click', function () {
+        const selectedAssignee = option.getAttribute('data-assignee');
+
+        // AJAX 요청으로 담당자 업데이트
+        fetch('/api/projects/' + assigneeBadge.dataset.projectid + '/tasks/' + assigneeBadge.dataset.key
+            + '/assignee', {
+          method: 'PATCH',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({personInCharge: selectedAssignee})
+        })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error('Failed to update assignee');
+          }
+          return response;
+        })
+        .then(function (data) {
+          // 담당자 업데이트 및 스타일 변경
+          window.location.reload();
+          assigneeDropdown.style.display = 'none';
+        })
+        .catch(function (error) {
+          console.error('Error updating assignee:', error);
+          alert('담당자 업데이트 중 오류가 발생했습니다.');
+        });
+      });
+    });
+
+    // 드롭다운 외부 클릭 시 닫기
+    document.addEventListener('click', function (event) {
+      if (!assigneeDropdown.contains(event.target) && event.target !== assigneeBadge) {
+        assigneeDropdown.style.display = 'none';
+      }
+    });
+
+    const priorityBadge = document.getElementById('priorityBadge');
+    const priorityDropdown = document.getElementById('priorityDropdown');
+
+    // 드롭다운 표시/숨김 토글
+    priorityBadge.addEventListener('click', function () {
+      if (priorityDropdown.style.display === 'none') {
+        priorityDropdown.style.display = 'block';
+      } else {
+        priorityDropdown.style.display = 'none';
+      }
+    });
+
+    // 드롭다운 옵션 클릭 시 우선순위 업데이트
+    const priorityOptions = document.querySelectorAll('.priority-option');
+    priorityOptions.forEach(function (option) {
+      option.addEventListener('click', function () {
+        const selectedPriority = option.getAttribute('data-priority');
+
+        // AJAX 요청으로 우선순위 업데이트
+        fetch('/api/projects/' + priorityBadge.dataset.projectid + '/tasks/'
+            + priorityBadge.dataset.key
+            + '/priority', {
+          method: 'PATCH',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({priority: selectedPriority})
+        })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error('Failed to update priority');
+          }
+          return response;
+        })
+        .then(function (data) {
+          // 우선순위 업데이트 및 스타일 변경
+          priorityBadge.textContent = selectedPriority;
+          priorityBadge.className = 'badge ' + getPriorityBadgeClass(selectedPriority);
+          priorityDropdown.style.display = 'none';
+        })
+        .catch(function (error) {
+          console.error('Error updating priority:', error);
+          alert('우선순위 업데이트 중 오류가 발생했습니다.');
+        });
+      });
+    });
+
+    // 드롭다운 외부 클릭 시 닫기
+    document.addEventListener('click', function (event) {
+      if (!priorityDropdown.contains(event.target) && event.target !== priorityBadge) {
+        priorityDropdown.style.display = 'none';
+      }
+    });
+
+    // 우선순위별 클래스 반환 함수
+    function getPriorityBadgeClass(priority) {
+      switch (priority) {
+        case 'LOW':
+          return 'priority-low';
+        case 'MEDIUM':
+          return 'priority-medium';
+        case 'HIGH':
+          return 'priority-high';
+        default:
+          return '';
+      }
+    }
+
+    const statusBadge = document.getElementById('statusBadge');
+    const statusDropdown = document.getElementById('statusDropdown');
+
+    // 드롭다운 표시/숨김 토글
+    statusBadge.addEventListener('click', function () {
+      if (statusDropdown.style.display === 'none') {
+        statusDropdown.style.display = 'block';
+      } else {
+        statusDropdown.style.display = 'none';
+      }
+    });
+
+    // 드롭다운 옵션 클릭 시 상태 업데이트
+    const statusOptions = document.querySelectorAll('.status-option');
+    statusOptions.forEach(function (option) {
+      option.addEventListener('click', function () {
+        const selectedStatus = option.getAttribute('data-status');
+
+        // AJAX 요청으로 상태 업데이트
+        fetch('/api/projects/' + statusBadge.dataset.projectid + '/tasks/' + statusBadge.dataset.key
+            + '/status', {
+          method: 'PATCH',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({status: selectedStatus})
+        })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error('Failed to update status');
+          }
+          return response;
+        })
+        .then(function (data) {
+          // 상태 업데이트 및 스타일 변경
+          statusBadge.textContent = selectedStatus;
+          statusBadge.className = 'badge ' + getStatusBadgeClass(selectedStatus);
+          statusDropdown.style.display = 'none';
+        })
+        .catch(function (error) {
+          console.error('Error updating status:', error);
+          alert('상태 업데이트 중 오류가 발생했습니다.');
+        });
+      });
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!statusDropdown.contains(event.target) && event.target !== statusBadge) {
+        statusDropdown.style.display = 'none';
+      }
+    });
+
+    // 상태별 클래스 반환 함수
+    function getStatusBadgeClass(status) {
+      switch (status) {
+        case 'TODO':
+          return 'status-todo';
+        case 'IN_PROGRESS':
+          return 'status-in-progress';
+        case 'DONE':
+          return 'status-done';
+        default:
+          return '';
+      }
+    }
+
     const titleSection = document.getElementById('titleSection');
     const titleText = titleSection.querySelector('.title-text');
     const editTitleInput = titleSection.querySelector('.edit-title-input');
@@ -346,13 +636,15 @@
       if (updatedTitle) {
         titleText.textContent = updatedTitle;
 
-        fetch('/api/projects/' + titleSection.dataset.projectid + '/tasks/' + titleSection.dataset.id + '/title', {
-          method: 'PATCH',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            title: updatedTitle
-          })
-        })
+        fetch(
+            '/api/projects/' + titleSection.dataset.projectid + '/tasks/' + titleSection.dataset.id
+            + '/title', {
+              method: 'PATCH',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({
+                title: updatedTitle
+              })
+            })
         .then(response => response.json())
         .then(data => console.log('Updated successfully:', data));
 
@@ -398,7 +690,8 @@
       if (updatedValue !== '') {
         infoText.textContent = updatedValue;
 
-        fetch('/api/projects/' + taskBody.dataset.projectid + '/tasks/' + taskBody.dataset.id + '/body', {
+        fetch('/api/projects/' + taskBody.dataset.projectid + '/tasks/' + taskBody.dataset.id
+            + '/body', {
           method: 'PATCH',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({

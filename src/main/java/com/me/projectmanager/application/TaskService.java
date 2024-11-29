@@ -1,7 +1,10 @@
 package com.me.projectmanager.application;
 
 import com.me.projectmanager.domain.Task;
+import com.me.projectmanager.domain.command.ChangeTaskAssigneeCommand;
 import com.me.projectmanager.domain.command.ChangeTaskBodyCommand;
+import com.me.projectmanager.domain.command.ChangeTaskDueDateCommand;
+import com.me.projectmanager.domain.command.ChangeTaskPriorityCommand;
 import com.me.projectmanager.domain.command.ChangeTaskStatusCommand;
 import com.me.projectmanager.domain.command.ChangeTaskTitleCommand;
 import com.me.projectmanager.domain.command.CreateTaskCommand;
@@ -52,6 +55,34 @@ public class TaskService {
   }
 
   @Transactional
+  public void changeTaskPriority(Long projectId, String taskKey,
+                                 ChangeTaskPriorityCommand command) {
+    Task task = taskRepository.findAll().stream()
+        .filter(t -> t.getProjectId().equals(projectId))
+        .filter(t -> t.getKey().equals(taskKey))
+        .findFirst()
+        .orElseThrow();
+
+    task.changePriority(command.getPriority());
+
+    taskRepository.update(task);
+  }
+
+  @Transactional
+  public void changeTaskAssignee(Long projectId, String taskKey,
+                                 ChangeTaskAssigneeCommand command) {
+    Task task = taskRepository.findAll().stream()
+        .filter(t -> t.getProjectId().equals(projectId))
+        .filter(t -> t.getKey().equals(taskKey))
+        .findFirst()
+        .orElseThrow();
+
+    task.changeAssignee(command.getPersonInCharge());
+
+    taskRepository.update(task);
+  }
+
+  @Transactional
   public void changeTaskBody(Long projectId, String taskKey, ChangeTaskBodyCommand command) {
     Task task = taskRepository.findAll().stream()
         .filter(t -> t.getProjectId().equals(projectId))
@@ -60,6 +91,19 @@ public class TaskService {
         .orElseThrow();
 
     task.changeBody(command.getBody());
+
+    taskRepository.update(task);
+  }
+
+  @Transactional
+  public void changeTaskDueDate(Long projectId, String taskKey, ChangeTaskDueDateCommand command) {
+    Task task = taskRepository.findAll().stream()
+        .filter(t -> t.getProjectId().equals(projectId))
+        .filter(t -> t.getKey().equals(taskKey))
+        .findFirst()
+        .orElseThrow();
+
+    task.changeDueDate(command.getDueDate());
 
     taskRepository.update(task);
   }

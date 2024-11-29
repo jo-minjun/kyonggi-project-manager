@@ -138,7 +138,10 @@ public class PageController {
         .findFirst()
         .get();
 
+    List<User> users = userService.findAll();
+
     model.addAttribute("task", taskDto);
+    model.addAttribute("users", users);
 
     return "taskDetail";
   }

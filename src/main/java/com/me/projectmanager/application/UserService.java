@@ -5,6 +5,7 @@ import com.me.projectmanager.domain.command.CreateUserCommand;
 import com.me.projectmanager.domain.repository.UserRepository;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,11 @@ public class UserService {
   @Transactional(readOnly = true)
   public User findByUsername(String username) {
     return userRepository.findByUsername(username).get();
+  }
+
+  @Transactional(readOnly = true)
+  public List<User> findAll() {
+    return userRepository.findAll();
   }
 
   @Transactional
@@ -82,5 +88,4 @@ public class UserService {
 
     return "/resources/image/upload/" + newFile.getName();
   }
-
 }

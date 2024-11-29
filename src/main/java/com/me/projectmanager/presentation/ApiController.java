@@ -6,11 +6,17 @@ import com.me.projectmanager.application.UserService;
 import com.me.projectmanager.domain.Project;
 import com.me.projectmanager.domain.Task;
 import com.me.projectmanager.domain.User;
+import com.me.projectmanager.domain.command.ChangeTaskAssigneeCommand;
 import com.me.projectmanager.domain.command.ChangeTaskBodyCommand;
+import com.me.projectmanager.domain.command.ChangeTaskDueDateCommand;
+import com.me.projectmanager.domain.command.ChangeTaskPriorityCommand;
 import com.me.projectmanager.domain.command.ChangeTaskStatusCommand;
 import com.me.projectmanager.domain.command.ChangeTaskTitleCommand;
 import com.me.projectmanager.domain.command.CreateTaskCommand;
+import com.me.projectmanager.presentation.dto.ChangeTaskAssigneeRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskBodyRequest;
+import com.me.projectmanager.presentation.dto.ChangeTaskDueDateRequest;
+import com.me.projectmanager.presentation.dto.ChangeTaskPriorityRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskStatusRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskTitleRequest;
 import com.me.projectmanager.presentation.dto.CreateProjectRequest;
@@ -107,6 +113,42 @@ public class ApiController {
     ChangeTaskStatusCommand command = TaskDtoMapper.toChangeTaskStatusCommand(request);
 
     taskService.changeTaskStatus(projectId, taskKey, command);
+
+    return ResponseEntity.ok().build();
+  }
+
+  @PatchMapping("/api/projects/{projectId}/tasks/{taskKey}/priority")
+  public HttpEntity<Void> updateTaskPriority(@PathVariable Long projectId,
+                                           @PathVariable String taskKey,
+                                           @RequestBody ChangeTaskPriorityRequest request) {
+
+    ChangeTaskPriorityCommand command = TaskDtoMapper.toChangeTaskPriorityCommand(request);
+
+    taskService.changeTaskPriority(projectId, taskKey, command);
+
+    return ResponseEntity.ok().build();
+  }
+
+  @PatchMapping("/api/projects/{projectId}/tasks/{taskKey}/assignee")
+  public HttpEntity<Void> updateTaskAssignee(@PathVariable Long projectId,
+                                             @PathVariable String taskKey,
+                                             @RequestBody ChangeTaskAssigneeRequest request) {
+
+    ChangeTaskAssigneeCommand command = TaskDtoMapper.toChangeTaskAssigneeCommand(request);
+
+    taskService.changeTaskAssignee(projectId, taskKey, command);
+
+    return ResponseEntity.ok().build();
+  }
+
+  @PatchMapping("/api/projects/{projectId}/tasks/{taskKey}/due-date")
+  public HttpEntity<Void> updateTaskDueDate(@PathVariable Long projectId,
+                                             @PathVariable String taskKey,
+                                             @RequestBody ChangeTaskDueDateRequest request) {
+
+    ChangeTaskDueDateCommand command = TaskDtoMapper.toChangeTaskDueDateCommand(request);
+
+    taskService.changeTaskDueDate(projectId, taskKey, command);
 
     return ResponseEntity.ok().build();
   }

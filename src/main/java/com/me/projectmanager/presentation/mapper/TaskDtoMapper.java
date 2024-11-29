@@ -3,11 +3,17 @@ package com.me.projectmanager.presentation.mapper;
 import com.me.projectmanager.domain.Project;
 import com.me.projectmanager.domain.Task;
 import com.me.projectmanager.domain.User;
+import com.me.projectmanager.domain.command.ChangeTaskAssigneeCommand;
 import com.me.projectmanager.domain.command.ChangeTaskBodyCommand;
+import com.me.projectmanager.domain.command.ChangeTaskDueDateCommand;
+import com.me.projectmanager.domain.command.ChangeTaskPriorityCommand;
 import com.me.projectmanager.domain.command.ChangeTaskStatusCommand;
 import com.me.projectmanager.domain.command.ChangeTaskTitleCommand;
 import com.me.projectmanager.domain.command.CreateTaskCommand;
+import com.me.projectmanager.presentation.dto.ChangeTaskAssigneeRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskBodyRequest;
+import com.me.projectmanager.presentation.dto.ChangeTaskDueDateRequest;
+import com.me.projectmanager.presentation.dto.ChangeTaskPriorityRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskStatusRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskTitleRequest;
 import com.me.projectmanager.presentation.dto.CreateTaskRequest;
@@ -46,11 +52,23 @@ public interface TaskDtoMapper {
     return new ChangeTaskStatusCommand(request.getStatus());
   }
 
+  static ChangeTaskAssigneeCommand toChangeTaskAssigneeCommand(ChangeTaskAssigneeRequest request) {
+    return new ChangeTaskAssigneeCommand(request.getPersonInCharge());
+  }
+
   static ChangeTaskBodyCommand toChangeTaskBodyCommand(ChangeTaskBodyRequest request) {
     return new ChangeTaskBodyCommand(request.getBody());
   }
 
+  static ChangeTaskDueDateCommand toChangeTaskDueDateCommand(ChangeTaskDueDateRequest request) {
+    return new ChangeTaskDueDateCommand(request.getDueDate());
+  }
+
   static ChangeTaskTitleCommand toChangeTaskTitleCommand(ChangeTaskTitleRequest request) {
     return new ChangeTaskTitleCommand(request.getTitle());
+  }
+
+  static ChangeTaskPriorityCommand toChangeTaskPriorityCommand(ChangeTaskPriorityRequest request) {
+    return new ChangeTaskPriorityCommand(request.getPriority());
   }
 }
