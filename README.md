@@ -4,6 +4,16 @@
 - JDK 21
 - MySQL 8.0
 
+### 실행방법
+```shell
+$ ./gradlew bootRun
+
+# or
+
+$ ./gradlew build
+$ java -jar build/libs/project-manager-0.0.1-SNAPSHOT.war
+```
+
 ### MySQL 계정
 | username | password |
 |----------|----------|
