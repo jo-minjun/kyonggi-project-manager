@@ -6,6 +6,7 @@ import com.me.projectmanager.domain.User;
 import com.me.projectmanager.domain.command.ChangeTaskAssigneeCommand;
 import com.me.projectmanager.domain.command.ChangeTaskBodyCommand;
 import com.me.projectmanager.domain.command.ChangeTaskDueDateCommand;
+import com.me.projectmanager.domain.command.ChangeTaskLabelCommand;
 import com.me.projectmanager.domain.command.ChangeTaskPriorityCommand;
 import com.me.projectmanager.domain.command.ChangeTaskStatusCommand;
 import com.me.projectmanager.domain.command.ChangeTaskTitleCommand;
@@ -13,6 +14,7 @@ import com.me.projectmanager.domain.command.CreateTaskCommand;
 import com.me.projectmanager.presentation.dto.ChangeTaskAssigneeRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskBodyRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskDueDateRequest;
+import com.me.projectmanager.presentation.dto.ChangeTaskLabelRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskPriorityRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskStatusRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskTitleRequest;
@@ -34,9 +36,9 @@ public interface TaskDtoMapper {
         .priority(task.getPriority())
         .label(task.getLabel())
         .createdByProfile(createdBy.getProfile())
-        .createdBy(task.getCreatedBy())
+        .createdBy(createdBy.getName())
         .personInChargeProfile(personInCharge.getProfile())
-        .personInCharge(task.getPersonInCharge())
+        .personInCharge(personInCharge.getName())
         .createdDate(task.getCreatedDate())
         .dueDate(task.getDueDate())
         .build();
@@ -70,5 +72,9 @@ public interface TaskDtoMapper {
 
   static ChangeTaskPriorityCommand toChangeTaskPriorityCommand(ChangeTaskPriorityRequest request) {
     return new ChangeTaskPriorityCommand(request.getPriority());
+  }
+
+  static ChangeTaskLabelCommand toChangeTaskLabelCommand(ChangeTaskLabelRequest request) {
+    return new ChangeTaskLabelCommand(request.getLabel());
   }
 }

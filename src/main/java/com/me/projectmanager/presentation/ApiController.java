@@ -9,6 +9,7 @@ import com.me.projectmanager.domain.User;
 import com.me.projectmanager.domain.command.ChangeTaskAssigneeCommand;
 import com.me.projectmanager.domain.command.ChangeTaskBodyCommand;
 import com.me.projectmanager.domain.command.ChangeTaskDueDateCommand;
+import com.me.projectmanager.domain.command.ChangeTaskLabelCommand;
 import com.me.projectmanager.domain.command.ChangeTaskPriorityCommand;
 import com.me.projectmanager.domain.command.ChangeTaskStatusCommand;
 import com.me.projectmanager.domain.command.ChangeTaskTitleCommand;
@@ -16,6 +17,7 @@ import com.me.projectmanager.domain.command.CreateTaskCommand;
 import com.me.projectmanager.presentation.dto.ChangeTaskAssigneeRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskBodyRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskDueDateRequest;
+import com.me.projectmanager.presentation.dto.ChangeTaskLabelRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskPriorityRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskStatusRequest;
 import com.me.projectmanager.presentation.dto.ChangeTaskTitleRequest;
@@ -152,6 +154,19 @@ public class ApiController {
 
     return ResponseEntity.ok().build();
   }
+
+  @PatchMapping("/api/projects/{projectId}/tasks/{taskKey}/label")
+  public HttpEntity<Void> updateTaskLabel(@PathVariable Long projectId,
+                                            @PathVariable String taskKey,
+                                            @RequestBody ChangeTaskLabelRequest request) {
+
+    ChangeTaskLabelCommand command = TaskDtoMapper.toChangeTaskLabelCommand(request);
+
+    taskService.changeTaskLabel(projectId, taskKey, command);
+
+    return ResponseEntity.ok().build();
+  }
+
 
   @PatchMapping("/api/projects/{projectId}/tasks/{taskKey}/body")
   public HttpEntity<Void> updateTaskBody(@PathVariable Long projectId,

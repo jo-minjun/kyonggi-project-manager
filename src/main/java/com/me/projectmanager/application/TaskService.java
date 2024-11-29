@@ -4,6 +4,7 @@ import com.me.projectmanager.domain.Task;
 import com.me.projectmanager.domain.command.ChangeTaskAssigneeCommand;
 import com.me.projectmanager.domain.command.ChangeTaskBodyCommand;
 import com.me.projectmanager.domain.command.ChangeTaskDueDateCommand;
+import com.me.projectmanager.domain.command.ChangeTaskLabelCommand;
 import com.me.projectmanager.domain.command.ChangeTaskPriorityCommand;
 import com.me.projectmanager.domain.command.ChangeTaskStatusCommand;
 import com.me.projectmanager.domain.command.ChangeTaskTitleCommand;
@@ -104,6 +105,19 @@ public class TaskService {
         .orElseThrow();
 
     task.changeDueDate(command.getDueDate());
+
+    taskRepository.update(task);
+  }
+
+  @Transactional
+  public void changeTaskLabel(Long projectId, String taskKey, ChangeTaskLabelCommand command) {
+    Task task = taskRepository.findAll().stream()
+        .filter(t -> t.getProjectId().equals(projectId))
+        .filter(t -> t.getKey().equals(taskKey))
+        .findFirst()
+        .orElseThrow();
+
+    task.changeLabel(command.getLabel());
 
     taskRepository.update(task);
   }

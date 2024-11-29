@@ -259,6 +259,21 @@
         box-shadow: 0 0 5px rgba(0, 82, 204, 0.5); /* 파란색 그림자 */
         background-color: #ffffff;
       }
+
+      /* 라벨 입력 필드 */
+      .edit-label-input {
+        padding: 8px 12px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        transition: all 0.3s ease;
+      }
+
+      /* 라벨 저장 버튼 */
+      .edit-label-btn:hover {
+        background-color: #0046a5;
+      }
     </style>
 </head>
 <body>
@@ -300,8 +315,9 @@
         <div class="info">
             <div class="row mb-2">
                 <div class="info-key col-md-3">라벨:</div>
-                <div class="info-value col-md-9">
-                    <span class="badge">${task.label}</span>
+                <div class="info-value col-md-9 position-relative" id="labelSection" data-projectId="${task.projectId}" data-key="${task.key}">
+                    <span class="label-text badge" style="width: fit-content;">${task.label}</span>
+                    <input type="text" class="edit-label-input" value="${task.label}" style="display: none; width: 100%; margin-top: 5px;" />
                 </div>
             </div>
             <div class="row mb-2">
@@ -377,9 +393,9 @@
                         <c:forEach var="user" items="${users}">
                             <li class="dropdown-item assignee-option"
                                 data-assignee="${user.username}">
-                                <img src="${user.profile}" alt="${user.username}"
+                                <img src="${user.profile}" alt="${user.name}"
                                      style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
-                                    ${user.username}
+                                    ${user.name}
                             </li>
                         </c:forEach>
                     </ul>
@@ -411,6 +427,56 @@
 </div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    const labelSection = document.getElementById('labelSection');
+    const labelText = labelSection.querySelector('.label-text');
+    const editLabelInput = labelSection.querySelector('.edit-label-input');
+
+    // 라벨 클릭 시 수정 모드로 전환
+    labelText.addEventListener('click', () => {
+      labelText.style.display = 'none';
+      editLabelInput.style.display = 'block';
+      editLabelInput.focus();
+    });
+
+    // blur 이벤트를 통해 라벨 저장
+    editLabelInput.addEventListener('blur', () => {
+      const updatedLabel = editLabelInput.value.trim();
+
+      // AJAX 요청으로 라벨 업데이트
+      fetch('/api/projects/' + labelSection.dataset.projectid + '/tasks/' + labelSection.dataset.key + '/label', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ label: updatedLabel })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to update label');
+        }
+        return response;
+      })
+      .then(data => {
+        labelText.textContent = updatedLabel || 'none'; // 비어 있는 경우 기본값 설정
+        labelText.style.display = 'block';
+        editLabelInput.style.display = 'none';
+      })
+      .catch(error => {
+        console.error('Error updating label:', error);
+        alert('라벨 업데이트 중 오류가 발생했습니다.');
+        // 오류 발생 시 원래 값 복원
+        labelText.style.display = 'block';
+        editLabelInput.style.display = 'none';
+      });
+    });
+
+    // 입력란 외부 클릭 시 수정 취소
+    document.addEventListener('click', (event) => {
+      if (!labelSection.contains(event.target)) {
+        labelText.style.display = 'block';
+        editLabelInput.style.display = 'none';
+      }
+    });
+
+
     const dueDatePicker = document.getElementById('dueDatePicker');
 
     // 날짜 변경 시 목표일 업데이트

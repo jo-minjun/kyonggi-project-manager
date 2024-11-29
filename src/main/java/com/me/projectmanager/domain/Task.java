@@ -73,6 +73,10 @@ public class Task {
     this.dueDate = dueDate;
   }
 
+  public void changeLabel(String label) {
+    this.label = label;
+  }
+
   public enum Priority {
     LOW, MEDIUM, HIGH;
   }
