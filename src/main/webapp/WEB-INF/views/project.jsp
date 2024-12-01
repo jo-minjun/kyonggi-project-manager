@@ -317,7 +317,7 @@
     const body = document.getElementById('taskBody').value;
     const label = document.getElementById('taskLabel').value.trim();
     const priority = document.getElementById('taskPriority').value
-    const personInCharge = document.getElementById('personInCharge').value.trim();
+    const personInCharge = document.getElementById('personInChargeDropdown').dataset.selected;
     const dueDate = document.getElementById('dueDate').value;
 
     // 입력 값 검증
@@ -329,10 +329,11 @@
     const currentUrl = window.location.href;
 
     const segments = currentUrl.split('/'); // URL을 "/"로 나눔
-    const projectId = segments[segments.length - 1];
+    const projectId = segments[segments.length - 1].replaceAll('#', '');
 
     // 서버로 요청 보내기
-    fetch('/api/projects/' + projectId + "/tasks", {
+    const url = '/api/projects/' + projectId + '/tasks';
+    fetch(url, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({

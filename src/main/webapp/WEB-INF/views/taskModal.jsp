@@ -255,14 +255,14 @@
                         aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="addTaskForm">
+                <form id="addTaskForm" style="width: 100%;">
                     <div class="mb-3">
-                        <label for="taskTitle" class="form-label">Task Title</label>
+                        <label for="taskTitle" class="form-label">제목</label>
                         <input type="text" class="form-control" id="taskTitle" required>
                     </div>
                     <div class="mb-3">
-                        <label for="taskBody" class="form-label">Task Body</label>
-                        <input type="text" class="form-control" id="taskBody" required>
+                        <label for="taskBody" class="form-label">설명</label>
+                        <textarea class="form-control" id="taskBody" rows="5" placeholder="Task 내용을 입력하세요" required></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="taskLabel" class="form-label">Label</label>
@@ -277,21 +277,25 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="personInCharge" class="form-label">Person In Charge</label>
-                        <input type="text" class="form-control" id="personInCharge" required>
+                        <label id="personInCharge" class="form-label">담당자</label>
+                        <div class="dropdown">
+                            <section class="form-select" id="personInChargeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                담당자를 선택하세요
+                            </section>
+                            <ul class="dropdown-menu w-100" id="personInChargeDropdownMenu" aria-labelledby="personInChargeDropdown">
+                                <!-- 동적으로 추가 -->
+                            </ul>
+                        </div>
                     </div>
                     <div class="mb-3">
-                        <label for="dueDate" class="form-label">Due Date</label>
+                        <label for="dueDate" class="form-label">목표일</label>
                         <input type="date" class="form-control" id="dueDate" required>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel
-                </button>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                        onclick="addTask()">Add Task
-                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="addTask()">Add Task</button>
             </div>
         </div>
     </div>
@@ -299,6 +303,42 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    const dropdownMenu = document.getElementById('personInChargeDropdownMenu');
+    const dropdownButton = document.getElementById('personInChargeDropdown');
+
+    // 서버에서 사용자 목록 가져오기
+    fetch('/api/users')
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error('사용자 목록을 가져오는 데 실패했습니다.');
+      }
+      return response.json();
+    })
+    .then(function (users) {
+      users.forEach(function (user) {
+        const listItem = document.createElement('li');
+        listItem.innerHTML =
+            '<a class="dropdown-item d-flex align-items-center" href="#" data-username="' +
+            user.username +
+            '">' +
+            '<img src="' +
+            user.profile +
+            '" alt="' +
+            user.name +
+            '" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">' +
+            user.name +
+            '</a>';
+        listItem.addEventListener('click', function () {
+          dropdownButton.textContent = user.name; // 선택된 이름 표시
+          dropdownButton.setAttribute('data-selected', user.username); // 선택된 username 저장
+        });
+        dropdownMenu.appendChild(listItem);
+      });
+    })
+    .catch(function (error) {
+      console.error('Error fetching user list:', error);
+    });
+
     function updateStatusStyle() {
       const statusElement = document.getElementById('modalTaskStatus');
       const status = statusElement.textContent.trim().toUpperCase();

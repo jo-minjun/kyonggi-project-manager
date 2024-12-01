@@ -224,6 +224,13 @@ public class ApiController {
     return ResponseEntity.ok().build();
   }
 
+  @GetMapping("/api/users")
+  public HttpEntity<List<UserDto>> getUsers() {
+    List<User> users = userService.findAll();
+
+    return ResponseEntity.ok(users.stream().map(UserDtoMapper::toUserDto).toList());
+  }
+
   @GetMapping("/api/tasks")
   public HttpEntity<List<TaskDto>> searchByKeyword(@RequestParam String query) {
     List<TaskDto> taskDtos = taskService.searchByKeyword(query)
